@@ -36,7 +36,9 @@ supervises many pi4_AP nodes. This repo only implements the **node**.
 | Boot | single systemd service, headless, survives power loss |
 | Disk | raw logs rotated (size-based, default 200 MB total cap) |
 
-Single process, single port (default `:8765`? — **decision D1**, see §8).
+Single process, single port: **`:8080`** (decision D1 resolved 2026-08-11 —
+DUT_browser mother server owns `:8000`, DAVE owns `:8765`; `:8080` clashes
+with neither).
 LAN-only, engineer profile, no login (same posture as DUT_browser).
 
 ## 3. Architecture
@@ -165,7 +167,7 @@ see `REVIEW_WORKFLOW.md`.
 
 | ID | Question | Default if unanswered |
 |---|---|---|
-| D1 | Node port number (avoid clashing with DAVE :8765 if co-located?) | `:8080` |
+| D1 | ~~Node port number~~ **Resolved: `:8080`** (mother server DUT_browser uses `:8000`, DAVE uses `:8765`) | — |
 | D2 | DUT command strings per firmware — YAML config or Python table? | YAML |
 | D3 | Commit `dist/` vs GitHub Actions release artifact | commit `dist/` (simplest for lab pull) |
 | D4 | TCP serial bridge in-process vs documenting `ser2net` alongside | in-process (tee keeps logging) |
