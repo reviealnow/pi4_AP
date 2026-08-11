@@ -1,0 +1,6 @@
+# Dev-only; never installed on the Pi.
+-r requirements.txt
+pytest>=8.0
+ruff>=0.6
+# Pulled in by fastapi.testclient (starlette's TestClient); test-time only.
+httpx>=0.27

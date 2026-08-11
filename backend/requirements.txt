@@ -1,0 +1,5 @@
+# Runtime dependencies — SPEC §2 caps these at exactly three.
+# Adding anything here needs a D-decision (REVIEW_WORKFLOW checklist).
+fastapi>=0.115
+uvicorn[standard]>=0.32
+pyserial>=3.5
