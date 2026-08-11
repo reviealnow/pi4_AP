@@ -111,7 +111,18 @@ class SerialWorker:
             self._opened_at = datetime.now().isoformat(timespec="seconds")
             self._bytes_written = 0
             self._last_rx_monotonic = 0.0
-            self._start_log_session_locked()
+            try:
+                self._start_log_session_locked()
+            except Exception:
+                # A serial session without its P0 raw log must never remain
+                # active. Opening the tty happens first because the log name is
+                # session-scoped, so unwind the fd if log creation/fsync fails.
+                try:
+                    self._serial.close()
+                finally:
+                    self._serial = None
+                    self._opened_at = None
+                raise
             self._thread = threading.Thread(target=self._read_loop, name="serial-reader", daemon=True)
             self._thread.start()
 

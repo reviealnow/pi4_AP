@@ -259,3 +259,25 @@ def test_intentional_close_does_not_report_an_error(fake_serial, log_dir):
 
 def test_close_is_safe_when_never_opened():
     SerialWorker().close()
+
+
+def test_log_creation_failure_releases_the_serial_port(fake_serial, monkeypatch):
+    """The tty must not stay owned when its mandatory raw log cannot start."""
+    fake = fake_serial([])
+    worker = SerialWorker()
+
+    def fail_log_creation() -> None:
+        raise OSError(28, "No space left on device")
+
+    monkeypatch.setattr(worker, "_start_log_session_locked", fail_log_creation)
+
+    try:
+        worker.open(port="/dev/fake", baudrate=115200)
+    except OSError as exc:
+        assert "No space left on device" in str(exc)
+    else:
+        raise AssertionError("opening without a raw log unexpectedly succeeded")
+
+    assert fake.is_open is False
+    assert worker.status()["connected"] is False
+    assert worker.status()["opened_at"] is None
