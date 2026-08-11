@@ -8,6 +8,7 @@ import {
   SerialPortInfo,
   SerialStatus,
 } from "../api/rest";
+import { formatBytes } from "../format";
 import { Card } from "./shell/Card";
 
 /**
@@ -169,14 +170,4 @@ export default function ConnectionCard({ serial, onChanged }: Props) {
       </form>
     </Card>
   );
-}
-
-export function formatBytes(bytes: number): string {
-  if (bytes < 1024) {
-    return `${bytes} B`;
-  }
-  if (bytes < 1024 * 1024) {
-    return `${(bytes / 1024).toFixed(1)} KiB`;
-  }
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MiB`;
 }

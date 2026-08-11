@@ -1,7 +1,7 @@
 import ConnectionCard from "../components/ConnectionCard";
 import ConsolePanel from "../components/ConsolePanel";
 import StatusPill from "../components/StatusPill";
-import { useDutMonitor } from "../monitoring/useDutMonitor";
+import { NodeStatus, useDutMonitor } from "../monitoring/useDutMonitor";
 
 /**
  * The only page in M1. DUT_browser's `AppShell` sidebar/nav is intentionally
@@ -33,7 +33,7 @@ export default function SerialConsolePage() {
   );
 }
 
-function statusHint(status: string, lastEventAgeSec: number | null): string {
+function statusHint(status: NodeStatus, lastEventAgeSec: number | null): string {
   if (status === "offline") {
     return "No connection to the node — the backend is unreachable.";
   }

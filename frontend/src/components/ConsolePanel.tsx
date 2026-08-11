@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { logDownloadUrl, SerialStatus } from "../api/rest";
-import { formatBytes } from "./ConnectionCard";
+import { formatBytes } from "../format";
 import { Card } from "./shell/Card";
 
 /**
