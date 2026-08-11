@@ -4,7 +4,7 @@ import StatusPill from "../components/StatusPill";
 import { NodeStatus, useDutMonitor } from "../monitoring/useDutMonitor";
 
 /**
- * The only page in M1. DUT_browser's `AppShell` sidebar/nav is intentionally
+ * The only page through M2. DUT_browser's `AppShell` sidebar/nav is intentionally
  * not ported: with one page there is nothing to navigate between, and the nav
  * comes back with the monitoring pages in M3/M4.
  */
