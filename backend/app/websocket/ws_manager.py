@@ -8,6 +8,8 @@ that keeps that replay ordered ahead of live broadcasts.
 from __future__ import annotations
 
 import asyncio
+import threading
+from collections import deque
 from collections.abc import Callable
 from typing import Any
 
@@ -15,19 +17,47 @@ from fastapi import WebSocket
 
 
 class WebSocketManager:
+    _QUEUE_MAX = 64
+
     def __init__(self) -> None:
         self._clients: set[WebSocket] = set()
         self._loop: asyncio.AbstractEventLoop | None = None
+        self._queue: asyncio.Queue[dict[str, Any]] | None = None
+        self._broadcast_task: asyncio.Task | None = None
+        # Coalesce cross-thread submissions into one scheduled loop callback.
+        # Both this ingress deque and the asyncio queue are bounded, so a slow
+        # browser can never create an unbounded task/callback backlog.
+        self._ingress: deque[dict[str, Any]] = deque()
+        self._ingress_lock = threading.Lock()
+        self._drain_scheduled = False
+        self._dropped_events = 0
         # Serialises connect-time replay against live broadcasts so a new client
         # never sees a live batch land ahead of its backlog.
         self._send_lock = asyncio.Lock()
 
     def bind_loop(self, loop: asyncio.AbstractEventLoop) -> None:
         self._loop = loop
+        self._queue = asyncio.Queue(maxsize=self._QUEUE_MAX)
+        self._broadcast_task = loop.create_task(self._broadcast_loop())
+
+    async def close(self) -> None:
+        task = self._broadcast_task
+        self._broadcast_task = None
+        if task is not None:
+            task.cancel()
+            try:
+                await task
+            except asyncio.CancelledError:
+                pass
 
     @property
     def client_count(self) -> int:
         return len(self._clients)
+
+    @property
+    def dropped_event_count(self) -> int:
+        with self._ingress_lock:
+            return self._dropped_events
 
     async def connect(self, ws: WebSocket, replay: Callable[[], list[str]] | None = None) -> None:
         """Accept a client and replay the console ring buffer to it.
@@ -71,6 +101,17 @@ class WebSocketManager:
             for ws in dead:
                 self.disconnect(ws)
 
+    async def _broadcast_loop(self) -> None:
+        queue = self._queue
+        if queue is None:
+            return
+        while True:
+            event = await queue.get()
+            try:
+                await self.broadcast(event)
+            finally:
+                queue.task_done()
+
     def emit_from_thread(self, event: dict[str, Any]) -> None:
         """Schedule a broadcast from the SerialWorker thread onto the loop."""
         loop = self._loop
@@ -79,10 +120,44 @@ class WebSocketManager:
             # buffer already holds the lines, so a client connecting later still
             # gets them.
             return
-        coro = self.broadcast(event)
+        should_schedule = False
+        with self._ingress_lock:
+            if len(self._ingress) >= self._QUEUE_MAX:
+                self._ingress.popleft()
+                self._dropped_events += 1
+            self._ingress.append(event)
+            if not self._drain_scheduled:
+                self._drain_scheduled = True
+                should_schedule = True
+        if not should_schedule:
+            return
         try:
-            loop.call_soon_threadsafe(asyncio.create_task, coro)
+            loop.call_soon_threadsafe(self._drain_ingress)
         except RuntimeError:
-            # Loop shutting down; dropping a console batch is harmless. Close the
-            # orphaned coroutine so it does not warn.
-            coro.close()
+            # Loop shutting down; UI delivery is best-effort and the ring still
+            # has the replay. Leave no submission marked as scheduled forever.
+            with self._ingress_lock:
+                self._dropped_events += len(self._ingress)
+                self._ingress.clear()
+                self._drain_scheduled = False
+
+    def _drain_ingress(self) -> None:
+        with self._ingress_lock:
+            events = list(self._ingress)
+            self._ingress.clear()
+            self._drain_scheduled = False
+        queue = self._queue
+        if queue is None:
+            with self._ingress_lock:
+                self._dropped_events += len(events)
+            return
+        for event in events:
+            if queue.full():
+                try:
+                    queue.get_nowait()
+                    queue.task_done()
+                except asyncio.QueueEmpty:
+                    pass
+                with self._ingress_lock:
+                    self._dropped_events += 1
+            queue.put_nowait(event)

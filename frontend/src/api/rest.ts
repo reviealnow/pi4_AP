@@ -24,12 +24,6 @@ export type SerialStatus = {
   last_error: string | null;
 };
 
-export type LogInfo = {
-  name: string;
-  size: number;
-  mtime: string;
-};
-
 /**
  * Turn a backend error (thrown by `post`/`get` as `new Error(response.text())`,
  * whose message is usually a JSON body like `{"detail":"..."}`) into friendly,
@@ -91,11 +85,6 @@ export async function closeSerial(): Promise<SerialStatus> {
   return post<SerialStatus>("/api/serial/close", {});
 }
 
-export async function listLogs(): Promise<LogInfo[]> {
-  const data = await request<{ logs: LogInfo[] }>("/api/serial/logs");
-  return data.logs ?? [];
-}
-
-export function logDownloadUrl(name: string): string {
-  return `/api/serial/logs/${encodeURIComponent(name)}`;
+export function logDownloadUrl(): string {
+  return "/api/serial/log";
 }

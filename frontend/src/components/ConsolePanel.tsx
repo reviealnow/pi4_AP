@@ -63,7 +63,7 @@ export default function ConsolePanel({ lines, serial, onClear }: Props) {
           </button>
           <a
             className="btn"
-            href={logName ? logDownloadUrl(logName) : undefined}
+            href={logName ? logDownloadUrl() : undefined}
             download={logName ?? undefined}
             aria-disabled={logName ? undefined : true}
             onClick={(event) => {

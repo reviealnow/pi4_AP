@@ -323,7 +323,7 @@ def main() -> int:
         http_json(f"{base_url}/api/serial/close", {})
         counter.stop()
 
-        with urllib.request.urlopen(f"{base_url}/api/serial/logs/{log_name}", timeout=120) as response:
+        with urllib.request.urlopen(f"{base_url}/api/serial/log", timeout=120) as response:
             with captured.open("wb") as handle:
                 shutil.copyfileobj(response, handle)
     finally:

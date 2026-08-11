@@ -9,6 +9,9 @@ from __future__ import annotations
 
 import time
 
+import pytest
+
+from app.serial import serial_worker as serial_worker_module
 from app.serial.serial_worker import SerialWorker
 
 
@@ -84,6 +87,41 @@ def test_partial_lines_are_logged_without_waiting_for_a_newline(fake_serial, log
         assert wait_for(lambda: log_path.read_bytes() == b"root@AP:/# ")
     finally:
         worker.close()
+
+
+def test_short_raw_writes_are_retried_until_every_byte_is_logged(fake_serial, log_dir, monkeypatch):
+    fake_serial([])
+    worker = SerialWorker()
+    worker.open(port="/dev/fake", baudrate=115200)
+    log_path = log_dir / worker.status()["log_name"]
+    original_write = worker._log_fp.write
+    calls = 0
+
+    def short_write(data) -> int:
+        nonlocal calls
+        calls += 1
+        return original_write(data[:3])
+
+    monkeypatch.setattr(worker._log_fp, "write", short_write)
+    payload = b"a short write must not drop this payload"
+    worker._write_log_raw(payload)
+    worker.close()
+
+    assert calls > 1
+    assert worker.status()["bytes_written"] == len(payload)
+    assert log_path.read_bytes() == payload
+
+
+def test_zero_progress_raw_write_fails_loudly(fake_serial, monkeypatch):
+    fake_serial([])
+    worker = SerialWorker()
+    worker.open(port="/dev/fake", baudrate=115200)
+    monkeypatch.setattr(worker._log_fp, "write", lambda _data: 0)
+
+    with pytest.raises(OSError, match="made no progress"):
+        worker._write_log_raw(b"must not disappear")
+
+    worker.close()
 
 
 # ------------------------------------------------------- ordering guarantee
@@ -177,6 +215,28 @@ def test_undecodable_bytes_do_not_break_the_line_stream(fake_serial, log_dir):
 
     assert lines[0] == "good"
     assert lines[2] == "tail"
+
+
+def test_unterminated_console_line_is_bounded_but_raw_log_stays_exact(fake_serial, log_dir):
+    cap = SerialWorker._MAX_CONSOLE_LINE_BYTES
+    payload = b"x" * (cap * 2 + 17)
+    chunks = [payload[:cap], payload[cap : cap * 2], payload[cap * 2 :]]
+    lines: list[str] = []
+    fake = fake_serial(chunks)
+    worker = SerialWorker(on_line=lines.append)
+    worker.open(port="/dev/fake", baudrate=115200)
+    log_path = log_dir / worker.status()["log_name"]
+    assert wait_for(fake.drained.is_set)
+    assert wait_for(lambda: worker.status()["bytes_written"] == len(payload))
+
+    assert len(worker._pending) <= cap
+    worker.close()
+
+    assert log_path.read_bytes() == payload
+    assert len(lines) == 3
+    assert lines[0].endswith(SerialWorker._TRUNCATED_LINE_SUFFIX)
+    assert lines[1].endswith(SerialWorker._TRUNCATED_LINE_SUFFIX)
+    assert lines[2] == "x" * 17
 
 
 # ----------------------------------------------------------------- lifecycle
@@ -281,3 +341,21 @@ def test_log_creation_failure_releases_the_serial_port(fake_serial, monkeypatch)
     assert fake.is_open is False
     assert worker.status()["connected"] is False
     assert worker.status()["opened_at"] is None
+
+
+def test_initial_fsync_failure_closes_and_resets_the_log(fake_serial, log_dir, monkeypatch):
+    fake = fake_serial([])
+    worker = SerialWorker()
+
+    def fail_fsync(_fd: int) -> None:
+        raise OSError(5, "I/O error")
+
+    monkeypatch.setattr(serial_worker_module.os, "fsync", fail_fsync)
+
+    with pytest.raises(OSError, match="I/O error"):
+        worker.open(port="/dev/fake", baudrate=115200)
+
+    assert fake.is_open is False
+    assert worker._log_fp is None
+    assert worker.current_log_path is None
+    assert worker.status()["log_name"] is None

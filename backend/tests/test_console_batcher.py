@@ -12,16 +12,20 @@ def collector():
     return events, events.append
 
 
-def test_size_threshold_emits_one_batch():
+def test_twenty_fast_lines_wait_for_the_full_window():
     events, on_event = collector()
     batcher = ConsoleBatcher(on_event=on_event)
 
-    for i in range(ConsoleBatcher.BATCH_SIZE):
+    started = time.monotonic()
+    for i in range(20):
         batcher.feed(f"line-{i}")
 
+    assert time.monotonic() - started < ConsoleBatcher.BATCH_MAX_LATENCY_SEC
+    assert events == []
+    time.sleep(ConsoleBatcher.BATCH_MAX_LATENCY_SEC * 4)
     assert len(events) == 1
     assert events[0]["type"] == "console_line_batch"
-    assert len(events[0]["lines"]) == ConsoleBatcher.BATCH_SIZE
+    assert len(events[0]["lines"]) == 20
 
 
 def test_nothing_is_emitted_before_the_window_closes():
@@ -48,7 +52,7 @@ def test_many_lines_never_produce_one_send_per_line():
 
     emitted = [line for event in events for line in event["lines"]]
     assert emitted == [f"line-{i}" for i in range(total)]
-    assert len(events) <= total / ConsoleBatcher.BATCH_SIZE + 1
+    assert len(events) == 1
 
     report = batcher.efficiency_report()
     assert report["console_line_count"] == total

@@ -13,7 +13,6 @@ import time
 import pytest
 from fastapi.testclient import TestClient
 
-from app.api import serial_api as serial_api_module
 from app.main import app
 from app.serial import serial_worker as serial_worker_module
 
@@ -33,7 +32,6 @@ def pty_pair():
 def client(tmp_path, monkeypatch):
     log_dir = tmp_path / "logs"
     monkeypatch.setattr(serial_worker_module, "LOG_DIR", log_dir)
-    monkeypatch.setattr(serial_api_module, "LOG_DIR", log_dir)
     with TestClient(app) as test_client:
         yield test_client
 
@@ -87,6 +85,7 @@ def test_capture_stream_replay_and_download(client, pty_pair):
     assert efficiency is not None, "ring never filled"
     assert efficiency["console_batch_count"] < 40
     assert efficiency["average_batch_size"] > 1.0
+    assert efficiency["ws_dropped_batches"] == 0
 
     # A client connecting now is replayed the ring buffer as a normal batch.
     with client.websocket_connect("/ws") as ws:
@@ -94,13 +93,14 @@ def test_capture_stream_replay_and_download(client, pty_pair):
     assert replay["type"] == "console_line_batch"
     assert replay["lines"] == [f"dut boot line {i}" for i in range(40)]
 
-    # The raw log downloads verbatim.
-    listed = client.get("/api/serial/logs").json()["logs"]
-    assert [item["name"] for item in listed] == [log_name]
-
-    downloaded = client.get(f"/api/serial/logs/{log_name}")
+    # Only the current raw log downloads verbatim; historical listing/download
+    # belongs to M2.
+    downloaded = client.get("/api/serial/log")
     assert downloaded.status_code == 200
     assert downloaded.content == payload
+    assert f'filename="{log_name}"' in downloaded.headers["content-disposition"]
+    assert client.get("/api/serial/logs").status_code == 404
+    assert client.get(f"/api/serial/logs/{log_name}").status_code == 404
 
     assert client.post("/api/serial/close").json()["connected"] is False
 
@@ -137,7 +137,5 @@ def test_reopening_does_not_replay_the_previous_session(client, pty_pair):
     client.post("/api/serial/close")
 
 
-def test_log_download_rejects_traversal_and_unknown_names(client):
-    assert client.get("/api/serial/logs/..%2F..%2Fetc%2Fpasswd").status_code in (400, 404)
-    assert client.get("/api/serial/logs/notes.txt").status_code == 400
-    assert client.get("/api/serial/logs/dut-19700101-000000.log").status_code == 404
+def test_current_log_download_is_404_before_any_session(client):
+    assert client.get("/api/serial/log").status_code == 404

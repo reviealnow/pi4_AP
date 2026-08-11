@@ -54,6 +54,7 @@ async def lifespan(app: FastAPI):
         serial_worker.close()
         batcher.flush()
         batcher.reset()
+        await ws_manager.close()
 
 
 app = FastAPI(title="pi4_AP node", lifespan=lifespan)
@@ -72,6 +73,7 @@ def console_efficiency() -> dict:
     report = app.state.console_batcher.efficiency_report()
     report["ring_lines"] = len(app.state.console_ring)
     report["ws_clients"] = app.state.ws_manager.client_count
+    report["ws_dropped_batches"] = app.state.ws_manager.dropped_event_count
     return report
 
 

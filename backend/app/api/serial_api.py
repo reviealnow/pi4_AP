@@ -11,7 +11,6 @@ route would be an endpoint with no caller.
 
 from __future__ import annotations
 
-from datetime import datetime
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, Request
@@ -19,7 +18,7 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from serial.tools import list_ports
 
-from app.config import DEFAULT_BAUDRATE, LOG_DIR
+from app.config import DEFAULT_BAUDRATE
 
 router = APIRouter(prefix="/api/serial", tags=["serial"])
 
@@ -75,38 +74,13 @@ def close_serial(request: Request) -> dict:
     return {"ok": True, **request.app.state.serial_worker.status()}
 
 
-@router.get("/logs")
-def list_logs() -> dict:
-    """Raw session logs, newest first. Rotation itself lands in M2."""
-    items: list[dict] = []
-    if LOG_DIR.is_dir():
-        for path in LOG_DIR.glob("dut-*.log"):
-            try:
-                if not path.is_file():
-                    continue
-                stat = path.stat()
-            except OSError:
-                continue
-            items.append(
-                {
-                    "name": path.name,
-                    "size": stat.st_size,
-                    "mtime": datetime.fromtimestamp(stat.st_mtime).isoformat(timespec="seconds"),
-                }
-            )
-    items.sort(key=lambda item: item["mtime"], reverse=True)
-    return {"logs": items}
-
-
-@router.get("/logs/{file_name}")
-def download_log(file_name: str) -> FileResponse:
-    """Download one raw session log verbatim — no analysis, no zipping."""
-    safe_name = Path(file_name).name
-    if safe_name != file_name or not (safe_name.startswith("dut-") and safe_name.endswith(".log")):
-        raise HTTPException(status_code=400, detail="Invalid log name")
-
-    log_path = LOG_DIR / safe_name
+@router.get("/log")
+def download_current_log(request: Request) -> FileResponse:
+    """Download only the current (most recently opened) raw session log."""
+    current = request.app.state.serial_worker.current_log_path
+    if current is None:
+        raise HTTPException(status_code=404, detail="No current log")
+    log_path = Path(current)
     if not log_path.exists() or not log_path.is_file():
-        raise HTTPException(status_code=404, detail="Log file not found")
-
-    return FileResponse(path=log_path, filename=safe_name, media_type="text/plain")
+        raise HTTPException(status_code=404, detail="Current log not found")
+    return FileResponse(path=log_path, filename=log_path.name, media_type="text/plain")

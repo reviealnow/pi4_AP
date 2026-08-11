@@ -27,6 +27,7 @@ can ever interrupt logging.
 
 from __future__ import annotations
 
+import errno
 import os
 import threading
 import time
@@ -44,6 +45,10 @@ class SerialWorker:
     # Cap on a single read so one burst cannot balloon the buffer; the loop just
     # comes straight back round for the rest.
     _MAX_READ_BYTES = 65536
+    # Console rendering is best-effort; never retain an unbounded unterminated
+    # line in memory. The byte-exact raw log is unaffected by this UI-only cap.
+    _MAX_CONSOLE_LINE_BYTES = 65536
+    _TRUNCATED_LINE_SUFFIX = " … [console line truncated; raw log contains full bytes]"
 
     def __init__(self, on_line: Callable[[str], None] | None = None) -> None:
         # ``on_line`` receives each assembled console line (newline stripped).
@@ -200,9 +205,28 @@ class SerialWorker:
             return
         buffer = self._pending + data
         parts = buffer.split(b"\n")
-        self._pending = parts.pop()
-        for raw in parts:
-            self._on_line(raw.rstrip(b"\r").decode("utf-8", errors="ignore"))
+        pending = parts.pop()
+        lines = [self._console_text(raw.rstrip(b"\r")) for raw in parts]
+
+        # An unterminated DUT line may otherwise grow forever. Emit capped
+        # fragments to the UI, clearly marked as truncated, and retain at most
+        # one cap-sized tail for later line completion. Raw bytes were already
+        # written in full before this method was entered.
+        while len(pending) > self._MAX_CONSOLE_LINE_BYTES:
+            fragment = pending[: self._MAX_CONSOLE_LINE_BYTES]
+            pending = pending[self._MAX_CONSOLE_LINE_BYTES :]
+            lines.append(self._console_text(fragment, truncated=True))
+        self._pending = pending
+
+        for line in lines:
+            self._on_line(line)
+
+    def _console_text(self, raw: bytes, *, truncated: bool = False) -> str:
+        if len(raw) > self._MAX_CONSOLE_LINE_BYTES:
+            raw = raw[: self._MAX_CONSOLE_LINE_BYTES]
+            truncated = True
+        text = raw.decode("utf-8", errors="ignore")
+        return f"{text}{self._TRUNCATED_LINE_SUFFIX}" if truncated else text
 
     def _flush_pending_line(self) -> None:
         """Emit a trailing unterminated line when the session ends."""
@@ -239,14 +263,32 @@ class SerialWorker:
         else:
             raise RuntimeError(f"could not create a session log in {LOG_DIR}")
         self._last_fsync_monotonic = time.monotonic()
-        os.fsync(self._log_fp.fileno())
+        try:
+            os.fsync(self._log_fp.fileno())
+        except Exception:
+            # Log startup is atomic from the worker's point of view: never
+            # retain an open file handle or advertise a path when the initial
+            # durability check fails.
+            try:
+                self._log_fp.close()
+            except Exception:
+                pass
+            finally:
+                self._log_fp = None
+                self._log_path = None
+            raise
 
     def _write_log_raw(self, data: bytes) -> None:
         with self._lock:
             if self._log_fp is None:
-                return
-            self._log_fp.write(data)
-            self._bytes_written += len(data)
+                raise OSError(errno.EIO, "raw log is not open")
+            remaining = memoryview(data)
+            while remaining:
+                written = self._log_fp.write(remaining)
+                if written is None or written <= 0 or written > len(remaining):
+                    raise OSError(errno.EIO, "raw log write made no progress")
+                self._bytes_written += written
+                remaining = remaining[written:]
             self._last_rx_monotonic = time.monotonic()
         self._maybe_force_sync()
 

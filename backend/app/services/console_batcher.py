@@ -15,16 +15,15 @@ class ConsoleBatcher:
     "console_line_batch", "lines": [...]}`` — so the DUT_browser event contract
     still holds.
 
-    A batch is emitted when either ``BATCH_SIZE`` lines have accumulated or
-    ``BATCH_MAX_LATENCY_SEC`` has elapsed since the first pending line,
-    whichever comes first. One send per line never happens.
+    An ordinary batch is emitted after the 50 ms window that starts with its
+    first line. ``flush`` remains available for explicit lifecycle drains.
+    One send per line never happens.
 
     Thread-safety: ``feed`` runs on the SerialWorker thread and the flush timer
     runs on its own thread; both are serialised on ``_state_lock``. ``on_event``
     is always called outside the lock.
     """
 
-    BATCH_SIZE = 20
     BATCH_MAX_LATENCY_SEC = 0.05
 
     def __init__(self, on_event: Callable[[dict], None]) -> None:
@@ -37,16 +36,9 @@ class ConsoleBatcher:
 
     def feed(self, text: str) -> None:
         """Queue one console line (no trailing newline) for the next batch."""
-        should_flush_now = False
         with self._state_lock:
             self._pending.append(text)
-            if len(self._pending) >= self.BATCH_SIZE:
-                should_flush_now = True
-                self._cancel_timer_locked()
-            else:
-                self._ensure_timer_locked()
-        if should_flush_now:
-            self.flush()
+            self._ensure_timer_locked()
 
     def flush(self) -> None:
         """Emit whatever is pending right now (no-op when nothing is queued)."""
