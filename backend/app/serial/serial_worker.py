@@ -168,7 +168,14 @@ class SerialWorker:
 
             # ---- P0: the raw log write happens first, and nothing below it is
             # ---- allowed to raise back into this loop.
-            self._write_log_raw(data)
+            try:
+                self._write_log_raw(data)
+            except OSError as exc:
+                # Nowhere left to put the bytes (disk full, log unlinked). Stop
+                # rather than pretend to capture, and say so loudly — a console
+                # that just goes quiet is the worst possible failure here.
+                self._last_error = f"raw log write failed: {exc}"
+                break
 
             try:
                 self._dispatch_lines(data)
@@ -202,12 +209,24 @@ class SerialWorker:
     def _start_log_session_locked(self) -> None:
         LOG_DIR.mkdir(parents=True, exist_ok=True)
         timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-        self._log_path = LOG_DIR / f"dut-{timestamp}.log"
         # Binary + unbuffered: one write(2) per chunk read, immediately visible
         # to a concurrent log download. No header line is written — the log holds
         # DUT bytes and nothing else, so it diffs byte-for-byte against a replay
         # fixture (session metadata lives in GET /api/serial/status instead).
-        self._log_fp = open(self._log_path, "ab", buffering=0)
+        #
+        # Exclusive create, with a counter suffix on collision: reconnecting
+        # inside the same second must not append a second session onto the first
+        # one's file, which would silently interleave two DUT captures.
+        for suffix in ("", *(f"-{n}" for n in range(2, 100))):
+            candidate = LOG_DIR / f"dut-{timestamp}{suffix}.log"
+            try:
+                self._log_fp = open(candidate, "xb", buffering=0)
+            except FileExistsError:
+                continue
+            self._log_path = candidate
+            break
+        else:
+            raise RuntimeError(f"could not create a session log in {LOG_DIR}")
         self._last_fsync_monotonic = time.monotonic()
         os.fsync(self._log_fp.fileno())
 

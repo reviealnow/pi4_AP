@@ -53,11 +53,19 @@ def open_serial(body: SerialOpenRequest, request: Request) -> dict:
     worker = request.app.state.serial_worker
     if not body.port:
         raise HTTPException(status_code=400, detail="A serial port is required")
+
+    # Retire the previous session before the new one starts, in this order:
+    # stop the reader, drain its trailing lines into the ring, then empty the
+    # ring. Clearing after open() instead would race the new session's first
+    # lines and wipe them from the console view.
+    worker.close()
+    request.app.state.console_batcher.flush()
+    request.app.state.console_ring.clear()
+
     try:
         worker.open(port=body.port, baudrate=body.baudrate)
     except Exception as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
-    request.app.state.console_ring.clear()
     return {"ok": True, **worker.status()}
 
 

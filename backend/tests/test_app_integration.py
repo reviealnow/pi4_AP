@@ -118,6 +118,25 @@ def test_live_lines_reach_a_connected_client(client, pty_pair):
     client.post("/api/serial/close")
 
 
+def test_reopening_does_not_replay_the_previous_session(client, pty_pair):
+    """A new session starts the console view empty — the old DUT's lines must
+    not leak into the new one's replay."""
+    master_fd, slave_name = pty_pair
+    client.post("/api/serial/open", json={"port": slave_name, "baudrate": 115200})
+    os.write(master_fd, b"old-session-line\n")
+    assert wait_for(lambda: client.get("/api/console/efficiency").json()["ring_lines"] >= 1)
+
+    client.post("/api/serial/open", json={"port": slave_name, "baudrate": 115200})
+    assert client.get("/api/console/efficiency").json()["ring_lines"] == 0
+
+    os.write(master_fd, b"new-session-line\n")
+    assert wait_for(lambda: client.get("/api/console/efficiency").json()["ring_lines"] == 1)
+    with client.websocket_connect("/ws") as ws:
+        assert ws.receive_json()["lines"] == ["new-session-line"]
+
+    client.post("/api/serial/close")
+
+
 def test_log_download_rejects_traversal_and_unknown_names(client):
     assert client.get("/api/serial/logs/..%2F..%2Fetc%2Fpasswd").status_code in (400, 404)
     assert client.get("/api/serial/logs/notes.txt").status_code == 400

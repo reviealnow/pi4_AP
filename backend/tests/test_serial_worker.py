@@ -202,22 +202,47 @@ def test_status_reports_the_open_session(fake_serial, log_dir):
     assert closed["connected"] is False
 
 
-def test_reopening_starts_a_new_log_and_keeps_the_old_one(fake_serial, log_dir):
+def test_reopening_within_the_same_second_never_shares_a_log(fake_serial, log_dir):
+    """Two sessions must never interleave into one file, even when the reconnect
+    lands inside the same timestamp second."""
     fake_serial([b"first session\n"])
     worker = SerialWorker()
     worker.open(port="/dev/fake", baudrate=115200)
     first = worker.status()["log_name"]
+    assert wait_for(lambda: worker.status()["bytes_written"] == 14)
     worker.close()
 
-    # Same-second reopen would collide on the timestamp; nudge past it.
-    time.sleep(1.05)
     fake_serial([b"second session\n"])
     worker.open(port="/dev/fake", baudrate=115200)
     second = worker.status()["log_name"]
+    assert wait_for(lambda: worker.status()["bytes_written"] == 15)
     worker.close()
 
     assert first != second
     assert {path.name for path in log_dir.glob("dut-*.log")} == {first, second}
+    assert (log_dir / first).read_bytes() == b"first session\n"
+    assert (log_dir / second).read_bytes() == b"second session\n"
+
+
+def test_a_failing_raw_log_write_is_reported_not_swallowed(fake_serial, log_dir, monkeypatch):
+    """Disk full is the one failure that legitimately stops capture — but it has
+    to surface, not leave the console silently dead."""
+    fake = fake_serial([b"before\n", b"after\n"])
+    worker = SerialWorker()
+    worker.open(port="/dev/fake", baudrate=115200)
+
+    def explode(_data: bytes) -> int:
+        raise OSError(28, "No space left on device")
+
+    monkeypatch.setattr(worker._log_fp, "write", explode)
+    try:
+        assert wait_for(lambda: worker.status()["last_error"] is not None)
+    finally:
+        worker.close()
+
+    assert fake is not None
+    assert "raw log write failed" in worker.status()["last_error"]
+    assert "No space left on device" in worker.status()["last_error"]
 
 
 def test_intentional_close_does_not_report_an_error(fake_serial, log_dir):
