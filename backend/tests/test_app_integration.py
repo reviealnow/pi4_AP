@@ -8,11 +8,14 @@ second instead of thirty minutes, and with no hardware.
 from __future__ import annotations
 
 import os
+import select
 import time
 
 import pytest
+import serial
 from fastapi.testclient import TestClient
 
+from app.api import serial_api as serial_api_module
 from app.main import app
 from app.serial import serial_worker as serial_worker_module
 
@@ -32,6 +35,7 @@ def pty_pair():
 def client(tmp_path, monkeypatch):
     log_dir = tmp_path / "logs"
     monkeypatch.setattr(serial_worker_module, "LOG_DIR", log_dir)
+    monkeypatch.setattr(serial_api_module, "LOG_DIR", log_dir)
     with TestClient(app) as test_client:
         yield test_client
 
@@ -47,7 +51,7 @@ def wait_for(predicate, timeout: float = 5.0):
 
 
 def test_health_and_port_listing(client):
-    assert client.get("/health").json() == {"ok": True, "milestone": "M1"}
+    assert client.get("/health").json() == {"ok": True, "milestone": "M2"}
     assert isinstance(client.get("/api/serial/ports").json()["ports"], list)
 
 
@@ -93,14 +97,14 @@ def test_capture_stream_replay_and_download(client, pty_pair):
     assert replay["type"] == "console_line_batch"
     assert replay["lines"] == [f"dut boot line {i}" for i in range(40)]
 
-    # Only the current raw log downloads verbatim; historical listing/download
-    # belongs to M2.
+    # Current and historical raw log downloads are both available in M2.
     downloaded = client.get("/api/serial/log")
     assert downloaded.status_code == 200
     assert downloaded.content == payload
     assert f'filename="{log_name}"' in downloaded.headers["content-disposition"]
-    assert client.get("/api/serial/logs").status_code == 404
-    assert client.get(f"/api/serial/logs/{log_name}").status_code == 404
+    listed = client.get("/api/serial/logs").json()["logs"]
+    assert [item["name"] for item in listed] == [log_name]
+    assert client.get(f"/api/serial/logs/{log_name}").content == payload
 
     assert client.post("/api/serial/close").json()["connected"] is False
 
@@ -139,3 +143,27 @@ def test_reopening_does_not_replay_the_previous_session(client, pty_pair):
 
 def test_current_log_download_is_404_before_any_session(client):
     assert client.get("/api/serial/log").status_code == 404
+
+
+def test_release_external_terminal_reacquire_and_send(client, pty_pair):
+    master_fd, slave_name = pty_pair
+    assert client.post("/api/serial/open", json={"port": slave_name, "baudrate": 115200}).status_code == 200
+
+    released = client.post("/api/serial/release").json()
+    assert released["released"] is True
+    assert released["connected"] is False
+
+    with serial.Serial(slave_name, 115200, timeout=1) as external:
+        os.write(master_fd, b"external terminal owns this\n")
+        assert external.read_until(b"\n") == b"external terminal owns this\n"
+
+    reacquired = client.post("/api/serial/reacquire").json()
+    assert reacquired["released"] is False
+    assert reacquired["connected"] is True
+
+    sent = client.post("/api/serial/send", json={"text": "show status"})
+    assert sent.status_code == 200, sent.text
+    readable, _, _ = select.select([master_fd], [], [], 2)
+    assert readable
+    assert os.read(master_fd, 1024) == b"show status\n"
+    client.post("/api/serial/close")
