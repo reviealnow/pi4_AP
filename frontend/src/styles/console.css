@@ -318,6 +318,15 @@ body {
   font-size: 13px;
 }
 
+.release-banner {
+  color: var(--warn);
+  background: var(--warn-weak);
+  border: 1px solid var(--warn);
+  border-radius: 10px;
+  padding: var(--space-3);
+  font-weight: 700;
+}
+
 /* ---------- Console viewport ---------- */
 
 .console {
@@ -351,6 +360,54 @@ body {
 .console-paused {
   color: var(--warn);
   font-weight: 600;
+}
+
+.console-tools,
+.console-send,
+.log-list-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.console-search,
+.console-send input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font: inherit;
+}
+
+.log-list-head {
+  justify-content: space-between;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border);
+}
+
+.log-list {
+  display: grid;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+  max-height: 180px;
+  overflow: auto;
+}
+
+.log-list a {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  color: var(--accent);
+  text-decoration: none;
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: var(--space-1) var(--space-2);
+}
+
+.log-list a:hover {
+  background: var(--accent-weak);
 }
 
 /* ---------- Responsive ---------- */

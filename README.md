@@ -18,10 +18,10 @@ designed to sit next to a mesh node or a DUT that needs close watching.
 
 ## Status
 
-**M1 (serial core) implemented** — the node captures a DUT's serial output to
-an always-on raw log, streams it to a browser over one WebSocket, and serves a
-minimal Serial Console page. Milestones M2–M5 (port handoff, parsers, the
-monitoring pages, fleet agent and deployment) are still ahead; see
+**M2 (console handoff) implemented** — the node captures a DUT's serial output
+to rotating raw logs, supports Release/Reacquire for an external terminal, and
+offers an opt-in in-process TCP bridge while continuing to log. Milestones
+M3–M5 (parsers, monitoring pages, fleet agent and deployment) are still ahead; see
 [docs/SPEC.md §5](docs/SPEC.md).
 
 Implementation is done by two LLM coding agents (Claude Opus 5 and GPT-5.6)
@@ -74,6 +74,19 @@ Acceptance soak (SPEC §5 — 30 minutes at 115200, zero lost lines):
 ./scripts/soak_test.sh                 # the real thing
 ./scripts/soak_test.sh --duration 60   # 1-minute smoke run of the harness
 ```
+
+M2 acceptance checks (PTY-backed; no DUT hardware required):
+
+```bash
+./scripts/handoff_test.sh
+./scripts/rotation_test.sh
+./scripts/bridge_test.sh
+```
+
+Raw logs rotate at 50 MiB per file with a 200 MiB directory cap by default.
+Override with `PI4AP_LOG_SEGMENT_BYTES` and `PI4AP_LOG_TOTAL_BYTES`. Decision
+D4 uses the in-process bridge; it is off by default and can be enabled with
+`PI4AP_BRIDGE_ENABLED=1` (bind defaults to `0.0.0.0:3333`).
 
 ## License
 

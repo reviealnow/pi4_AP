@@ -22,7 +22,20 @@ export type SerialStatus = {
   bytes_written: number;
   last_rx_age_s: number | null;
   last_error: string | null;
+  released: boolean;
+  log_segment_bytes: number;
+  log_total_bytes: number;
+  bridge: {
+    enabled: boolean;
+    host: string;
+    port: number;
+    clients: number;
+    last_error: string | null;
+    dropped_output_chunks: number;
+  };
 };
+
+export type LogInfo = { name: string; size: number; mtime_ns: number };
 
 /**
  * Turn a backend error (thrown by `post`/`get` as `new Error(response.text())`,
@@ -85,6 +98,27 @@ export async function closeSerial(): Promise<SerialStatus> {
   return post<SerialStatus>("/api/serial/close", {});
 }
 
+export async function releaseSerial(): Promise<SerialStatus> {
+  return post<SerialStatus>("/api/serial/release", {});
+}
+
+export async function reacquireSerial(): Promise<SerialStatus> {
+  return post<SerialStatus>("/api/serial/reacquire", {});
+}
+
+export async function sendSerial(text: string): Promise<void> {
+  await post<{ ok: boolean }>("/api/serial/send", { text });
+}
+
+export async function listLogs(): Promise<LogInfo[]> {
+  const payload = await request<{ logs: LogInfo[] }>("/api/serial/logs");
+  return payload.logs;
+}
+
 export function logDownloadUrl(): string {
   return "/api/serial/log";
+}
+
+export function namedLogDownloadUrl(name: string): string {
+  return `/api/serial/logs/${encodeURIComponent(name)}`;
 }

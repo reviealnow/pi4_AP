@@ -1,10 +1,9 @@
 """Background serial reader with always-on raw logging.
 
-Ported from DUT_browser's ``app/serial/serial_worker.py``. Cut: the sysmon
-parser hand-off, interactive terminal mode, ``capture_command`` and writes to
-the DUT (M2/M3/M4 territory — M1 is read-only, the console page has no send
-box). Kept: the thread/lock/stop-event lifecycle, the session-log handling and
-the periodic ``fsync`` policy.
+Ported from DUT_browser's ``app/serial/serial_worker.py``. Kept: the
+thread/lock/stop-event lifecycle, serialized DUT writes, session logging and
+periodic ``fsync`` policy. Cut: parser hand-off and ``capture_command``; M2 adds
+explicit Release/Reacquire and byte-exact in-process rotation.
 
 Two deliberate changes from the DUT_browser original, both in service of the M1
 acceptance test (SPEC §5: a 30-minute soak whose raw log must ``diff`` clean
@@ -37,7 +36,7 @@ from pathlib import Path
 
 import serial
 
-from app.config import DEFAULT_BAUDRATE, LOG_DIR
+from app.config import DEFAULT_BAUDRATE, LOG_DIR, LOG_SEGMENT_BYTES, LOG_TOTAL_BYTES
 
 
 class SerialWorker:
@@ -50,11 +49,19 @@ class SerialWorker:
     _MAX_CONSOLE_LINE_BYTES = 65536
     _TRUNCATED_LINE_SUFFIX = " … [console line truncated; raw log contains full bytes]"
 
-    def __init__(self, on_line: Callable[[str], None] | None = None) -> None:
+    def __init__(
+        self,
+        on_line: Callable[[str], None] | None = None,
+        on_raw: Callable[[bytes], None] | None = None,
+        *,
+        log_segment_bytes: int = LOG_SEGMENT_BYTES,
+        log_total_bytes: int = LOG_TOTAL_BYTES,
+    ) -> None:
         # ``on_line`` receives each assembled console line (newline stripped).
         # It is called *after* the raw log write and is never allowed to raise
         # into the reader.
         self._on_line = on_line
+        self._on_raw = on_raw
         self._serial: serial.Serial | None = None
         self._thread: threading.Thread | None = None
         self._stop_event = threading.Event()
@@ -69,6 +76,12 @@ class SerialWorker:
         self._bytes_written: int = 0
         self._last_rx_monotonic: float = 0.0
         self._last_error: str | None = None
+        self._released = False
+        self._log_segment_bytes = max(1, log_segment_bytes)
+        self._log_total_bytes = max(self._log_segment_bytes, log_total_bytes)
+        self._segment_bytes = 0
+        self._segment_index = 1
+        self._session_token = ""
 
     # ------------------------------------------------------------------ state
 
@@ -98,7 +111,13 @@ class SerialWorker:
                 "bytes_written": self._bytes_written,
                 "last_rx_age_s": None if last_rx == 0.0 else round(time.monotonic() - last_rx, 1),
                 "last_error": self._last_error,
+                "released": self._released,
+                "log_segment_bytes": self._log_segment_bytes,
+                "log_total_bytes": self._log_total_bytes,
             }
+
+    def set_raw_callback(self, callback: Callable[[bytes], None] | None) -> None:
+        self._on_raw = callback
 
     # -------------------------------------------------------------- lifecycle
 
@@ -110,12 +129,14 @@ class SerialWorker:
             self._stop_event.clear()
             self._pending = b""
             self._last_error = None
+            self._released = False
             self._serial = serial.Serial(port=port, baudrate=baudrate, timeout=1)
             self._port = port
             self._baudrate = baudrate
             self._opened_at = datetime.now().isoformat(timespec="seconds")
             self._bytes_written = 0
             self._last_rx_monotonic = 0.0
+            self._segment_index = 1
             try:
                 self._start_log_session_locked()
             except Exception:
@@ -154,6 +175,58 @@ class SerialWorker:
 
         self._flush_pending_line()
         self._close_log_session()
+        with self._lock:
+            self._released = False
+
+    def release(self) -> None:
+        """Close the tty so an external terminal can own it; logging pauses."""
+        with self._lock:
+            if self._serial is None or not self._serial.is_open:
+                raise RuntimeError("Serial port is not open")
+            port = self._port
+            baudrate = self._baudrate
+        self.close()
+        with self._lock:
+            self._port = port
+            self._baudrate = baudrate
+            self._released = True
+
+    def reacquire(self) -> None:
+        """Reopen the remembered tty after an external-terminal session."""
+        with self._lock:
+            if not self._released or not self._port:
+                raise RuntimeError("Serial port is not released")
+            port = self._port
+            baudrate = self._baudrate
+        try:
+            self.open(port, baudrate)
+        except Exception:
+            with self._lock:
+                self._port = port
+                self._baudrate = baudrate
+                self._released = True
+            raise
+
+    def send(self, text: str) -> None:
+        """Write a console command, adding one newline when absent."""
+        payload = text.encode("utf-8", errors="ignore")
+        if not payload.endswith(b"\n"):
+            payload += b"\n"
+        self.write_raw(payload)
+
+    def write_raw(self, data: bytes) -> None:
+        """Serialize UI and TCP-bridge writes through the worker lock."""
+        with self._lock:
+            if self._released:
+                raise RuntimeError("Port released to external terminal")
+            if self._serial is None or not self._serial.is_open:
+                raise RuntimeError("Serial port is not open")
+            remaining = memoryview(data)
+            while remaining:
+                written = self._serial.write(remaining)
+                if written is None or written <= 0 or written > len(remaining):
+                    raise OSError(errno.EIO, "serial write made no progress")
+                remaining = remaining[written:]
 
     # ------------------------------------------------------------ reader loop
 
@@ -192,6 +265,14 @@ class SerialWorker:
                 # that just goes quiet is the worst possible failure here.
                 self._last_error = f"raw log write failed: {exc}"
                 break
+
+            callback = self._on_raw
+            if callback is not None:
+                try:
+                    callback(data)
+                except Exception:
+                    # The TCP bridge is downstream of the P0 raw log.
+                    pass
 
             try:
                 self._dispatch_lines(data)
@@ -253,16 +334,19 @@ class SerialWorker:
         # inside the same second must not append a second session onto the first
         # one's file, which would silently interleave two DUT captures.
         for suffix in ("", *(f"-{n}" for n in range(2, 100))):
-            candidate = LOG_DIR / f"dut-{timestamp}{suffix}.log"
+            token = f"{timestamp}{suffix}"
+            candidate = LOG_DIR / f"dut-{token}.log"
             try:
                 self._log_fp = open(candidate, "xb", buffering=0)
             except FileExistsError:
                 continue
+            self._session_token = token
             self._log_path = candidate
             break
         else:
             raise RuntimeError(f"could not create a session log in {LOG_DIR}")
         self._last_fsync_monotonic = time.monotonic()
+        self._segment_bytes = 0
         try:
             os.fsync(self._log_fp.fileno())
         except Exception:
@@ -277,6 +361,7 @@ class SerialWorker:
                 self._log_fp = None
                 self._log_path = None
             raise
+        self._prune_logs_locked()
 
     def _write_log_raw(self, data: bytes) -> None:
         with self._lock:
@@ -284,10 +369,15 @@ class SerialWorker:
                 raise OSError(errno.EIO, "raw log is not open")
             remaining = memoryview(data)
             while remaining:
-                written = self._log_fp.write(remaining)
-                if written is None or written <= 0 or written > len(remaining):
+                if self._segment_bytes >= self._log_segment_bytes:
+                    self._rotate_log_locked()
+                capacity = self._log_segment_bytes - self._segment_bytes
+                piece = remaining[:capacity]
+                written = self._log_fp.write(piece)
+                if written is None or written <= 0 or written > len(piece):
                     raise OSError(errno.EIO, "raw log write made no progress")
                 self._bytes_written += written
+                self._segment_bytes += written
                 remaining = remaining[written:]
             self._last_rx_monotonic = time.monotonic()
         self._maybe_force_sync()
@@ -302,6 +392,41 @@ class SerialWorker:
             os.fsync(self._log_fp.fileno())
             self._last_fsync_monotonic = now
 
+    def _rotate_log_locked(self) -> None:
+        if self._log_fp is None:
+            raise OSError(errno.EIO, "raw log is not open")
+        os.fsync(self._log_fp.fileno())
+        self._log_fp.close()
+        self._log_fp = None
+        self._segment_index += 1
+        path = LOG_DIR / f"dut-{self._session_token}-part{self._segment_index:04d}.log"
+        self._log_fp = open(path, "xb", buffering=0)
+        self._log_path = path
+        self._segment_bytes = 0
+        self._last_fsync_monotonic = time.monotonic()
+        os.fsync(self._log_fp.fileno())
+        self._prune_logs_locked()
+
+    def _prune_logs_locked(self) -> None:
+        """Delete oldest closed logs until the configured total cap is met."""
+        try:
+            paths = [path for path in LOG_DIR.glob("dut-*.log") if path.is_file()]
+            paths.sort(key=lambda path: (path.stat().st_mtime_ns, path.name))
+            total = sum(path.stat().st_size for path in paths)
+            current = self._log_path
+            for path in paths:
+                if total <= self._log_total_bytes:
+                    break
+                if current is not None and path == current:
+                    continue
+                size = path.stat().st_size
+                path.unlink()
+                total -= size
+        except OSError:
+            # Rotation cleanup must never interrupt P0 logging. A later write or
+            # rotation retries pruning; disk-full still fails loudly on write.
+            return
+
     def _close_log_session(self) -> None:
         with self._lock:
             if self._log_fp is not None:
@@ -310,3 +435,4 @@ class SerialWorker:
                 finally:
                     self._log_fp.close()
                     self._log_fp = None
+                self._prune_logs_locked()

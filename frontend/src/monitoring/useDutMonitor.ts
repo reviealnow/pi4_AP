@@ -22,11 +22,16 @@ const STATUS_TICK_MS = 2_000;
 /** Connection-status pill states (SPEC §3.2). */
 export type NodeStatus = "streaming" | "no-dut" | "offline";
 
+export type ConsoleLine = {
+  text: string;
+  timestamp: number;
+};
+
 export type DutMonitorState = {
   /** Streaming / No DUT / Offline. */
   status: NodeStatus;
   /** Raw console stream, capped at the ring-buffer size. */
-  lines: string[];
+  lines: ConsoleLine[];
   /** Latest serial-port status from the backend; null until the first poll. */
   serial: SerialStatus | null;
   /** Whole seconds since the last console event; null before any event. */
@@ -37,8 +42,16 @@ export type DutMonitorState = {
   clearLines: () => void;
 };
 
+export function appendConsoleLines(
+  previous: ConsoleLine[],
+  incoming: string[],
+  receivedAt: number,
+): ConsoleLine[] {
+  return [...previous, ...incoming.map((text) => ({ text, timestamp: receivedAt }))].slice(-MAX_LINES);
+}
+
 export function useDutMonitor(): DutMonitorState {
-  const [lines, setLines] = useState<string[]>([]);
+  const [lines, setLines] = useState<ConsoleLine[]>([]);
   const [serial, setSerial] = useState<SerialStatus | null>(null);
   const [connected, setConnected] = useState(false);
   const [nowTick, setNowTick] = useState(() => Date.now());
@@ -60,8 +73,9 @@ export function useDutMonitor(): DutMonitorState {
           if (event.lines.length === 0) {
             return;
           }
-          setLines((prev) => [...prev, ...event.lines].slice(-MAX_LINES));
-          lastActivityRef.current = Date.now();
+          const receivedAt = Date.now();
+          setLines((prev) => appendConsoleLines(prev, event.lines, receivedAt));
+          lastActivityRef.current = receivedAt;
         }
       },
       // The backend replays the ring buffer on every (re)connect, so drop the

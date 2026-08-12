@@ -5,6 +5,8 @@ import {
   humanizeApiError,
   listSerialPorts,
   openSerial,
+  reacquireSerial,
+  releaseSerial,
   SerialPortInfo,
   SerialStatus,
 } from "../api/rest";
@@ -15,8 +17,8 @@ import { Card } from "./shell/Card";
  * Port + baud picker and connect/disconnect controls.
  *
  * Ported from the connection half of DUT_browser's `SettingsSection` /
- * `.conn-*` markup. Cut: replay mode (M1 reads a real port only) and the
- * terminal-mode toggle (M2).
+ * `.conn-*` markup. Replay mode remains out; M2 adds explicit external-terminal
+ * Release/Reacquire controls.
  */
 
 // SPEC §2: 115200 default, must sustain up to 921600.
@@ -35,6 +37,7 @@ export default function ConnectionCard({ serial, onChanged }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   const connected = serial?.connected ?? false;
+  const released = serial?.released ?? false;
 
   // The open port is not always in the enumerated list (a PTY, or a device that
   // disappeared from the scan). Fold it in so the picker shows what is actually
@@ -91,6 +94,23 @@ export default function ConnectionCard({ serial, onChanged }: Props) {
     }
   }
 
+  async function handleHandoff() {
+    setBusy(true);
+    setError(null);
+    try {
+      if (released) {
+        await reacquireSerial();
+      } else {
+        await releaseSerial();
+      }
+    } catch (cause) {
+      setError(humanizeApiError(cause));
+    } finally {
+      setBusy(false);
+      onChanged();
+    }
+  }
+
   return (
     <Card
       title="Serial port"
@@ -112,7 +132,7 @@ export default function ConnectionCard({ serial, onChanged }: Props) {
               className="conn-port"
               value={selectedPort}
               onChange={(event) => setSelectedPort(event.target.value)}
-              disabled={connected || busy}
+              disabled={connected || released || busy}
             >
               {options.map((port) => (
                 <option key={port.device} value={port.device}>
@@ -128,7 +148,7 @@ export default function ConnectionCard({ serial, onChanged }: Props) {
               value={selectedPort}
               onChange={(event) => setSelectedPort(event.target.value)}
               placeholder="/dev/ttyUSB0"
-              disabled={connected || busy}
+              disabled={connected || released || busy}
             />
           )}
 
@@ -140,7 +160,7 @@ export default function ConnectionCard({ serial, onChanged }: Props) {
             className="conn-input conn-baud"
             value={baudrate}
             onChange={(event) => setBaudrate(Number(event.target.value))}
-            disabled={connected || busy}
+            disabled={connected || released || busy}
           >
             {BAUD_RATES.map((rate) => (
               <option key={rate} value={rate}>
@@ -152,18 +172,41 @@ export default function ConnectionCard({ serial, onChanged }: Props) {
           <button
             type="submit"
             className={`btn ${connected ? "danger" : "primary"}`}
-            disabled={busy || (!connected && !selectedPort)}
+            disabled={busy || released || (!connected && !selectedPort)}
           >
-            {connected ? "Disconnect" : "Connect"}
+            {released ? "Released" : connected ? "Disconnect" : "Connect"}
           </button>
+          {(connected || released) && (
+            <button
+              type="button"
+              className={`btn ${released ? "primary" : ""}`}
+              onClick={() => void handleHandoff()}
+              disabled={busy}
+            >
+              {released ? "Reacquire" : "Release to terminal"}
+            </button>
+          )}
         </div>
+
+        {released ? (
+          <div className="release-banner">Port released to external terminal — logging paused</div>
+        ) : null}
 
         {error ? <div className="conn-error">{error}</div> : null}
 
         <div className="conn-meta">
-          <span>{connected ? `open ${serial?.port} @ ${serial?.baudrate}` : "port closed"}</span>
+          <span>
+            {released
+              ? `released ${serial?.port} @ ${serial?.baudrate}`
+              : connected
+                ? `open ${serial?.port} @ ${serial?.baudrate}`
+                : "port closed"}
+          </span>
           {serial?.log_name ? <span>log {serial.log_name}</span> : null}
           {connected ? <span>{formatBytes(serial?.bytes_written ?? 0)} captured</span> : null}
+          {serial?.bridge.enabled ? (
+            <span>TCP bridge :{serial.bridge.port} · {serial.bridge.clients} client(s)</span>
+          ) : null}
         </div>
 
         {serial?.last_error ? <div className="conn-error">{serial.last_error}</div> : null}

@@ -1,4 +1,4 @@
-"""pi4_AP node — FastAPI application (M1: serial core + console).
+"""pi4_AP node — FastAPI application (M2: console + handoff/rotation/bridge).
 
 Single process, single port :8080 (SPEC §2 / decision D1). The pipeline is:
 
@@ -19,8 +19,16 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 
 from app.api.serial_api import router as serial_router
-from app.config import FRONTEND_DIST, HOST, PORT
+from app.config import (
+    FRONTEND_DIST,
+    HOST,
+    PORT,
+    TCP_BRIDGE_ENABLED,
+    TCP_BRIDGE_HOST,
+    TCP_BRIDGE_PORT,
+)
 from app.serial.serial_worker import SerialWorker
+from app.serial.tcp_bridge import TcpSerialBridge
 from app.services.console_batcher import ConsoleBatcher
 from app.services.console_ring import ConsoleRing
 from app.websocket.ws_manager import WebSocketManager
@@ -42,16 +50,27 @@ async def lifespan(app: FastAPI):
 
     batcher = ConsoleBatcher(on_event=on_event)
     serial_worker = SerialWorker(on_line=batcher.feed)
+    tcp_bridge = TcpSerialBridge(serial_worker.write_raw, TCP_BRIDGE_HOST, TCP_BRIDGE_PORT)
+    serial_worker.set_raw_callback(tcp_bridge.publish)
+    if TCP_BRIDGE_ENABLED:
+        try:
+            tcp_bridge.start()
+        except OSError as exc:
+            # The bridge is optional. A stale ser2net or another listener must
+            # not prevent the node (and therefore P0 raw logging) from booting.
+            tcp_bridge.disable_with_error(exc)
 
     app.state.ws_manager = ws_manager
     app.state.console_ring = console_ring
     app.state.console_batcher = batcher
     app.state.serial_worker = serial_worker
+    app.state.tcp_bridge = tcp_bridge
 
     try:
         yield
     finally:
         serial_worker.close()
+        tcp_bridge.close()
         batcher.flush()
         batcher.reset()
         await ws_manager.close()
@@ -63,7 +82,7 @@ app.include_router(serial_router)
 
 @app.get("/health")
 def health() -> dict:
-    return {"ok": True, "milestone": "M1"}
+    return {"ok": True, "milestone": "M2"}
 
 
 @app.get("/api/console/efficiency")

@@ -359,3 +359,40 @@ def test_initial_fsync_failure_closes_and_resets_the_log(fake_serial, log_dir, m
     assert worker._log_fp is None
     assert worker.current_log_path is None
     assert worker.status()["log_name"] is None
+
+
+def test_rotation_caps_total_disk_and_preserves_retained_tail(fake_serial, log_dir):
+    fake_serial([])
+    worker = SerialWorker(log_segment_bytes=10, log_total_bytes=25)
+    worker.open(port="/dev/fake", baudrate=115200)
+    payload = bytes(range(35))
+    worker._write_log_raw(payload)
+    worker.close()
+
+    paths = sorted(log_dir.glob("dut-*.log"), key=lambda path: path.stat().st_mtime_ns)
+    total = sum(path.stat().st_size for path in paths)
+    retained = b"".join(path.read_bytes() for path in paths)
+    assert total <= 25
+    assert retained == payload[-total:]
+    assert len(paths) == 3
+
+
+def test_pruning_does_not_run_on_each_raw_write(fake_serial, log_dir, monkeypatch):
+    fake_serial([])
+    worker = SerialWorker(log_segment_bytes=1024, log_total_bytes=4096)
+    worker.open(port="/dev/fake", baudrate=115200)
+    prune_calls = 0
+    original_prune = worker._prune_logs_locked
+
+    def count_prune() -> None:
+        nonlocal prune_calls
+        prune_calls += 1
+        original_prune()
+
+    monkeypatch.setattr(worker, "_prune_logs_locked", count_prune)
+    for _ in range(128):
+        worker._write_log_raw(b"x")
+
+    assert prune_calls == 0
+    worker.close()
+    assert prune_calls == 1
