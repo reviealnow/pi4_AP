@@ -1,0 +1,14 @@
+# mode=replay source=/Users/nelsonchang/Documents/DUT_browser/dut-dashboard/logs/sample.log
+Booting DUT regression image...
+= Test Time: 1, 2026-02-26 09:46:01 =
+CPU0: 1.9% usr 2.9% sys 0.0% nic 80.6% idle 0.0% io 1.9% irq 12.6% sirq
+CPU1: 5.0% usr 3.0% sys 0.0% nic 88.0% idle 0.0% io 1.0% irq 3.0% sirq
+--- CLIENTS Radio=5G ---
+{"data": {"total_size": 2, "client_list": [{"mac":"AA:BB:CC:00:11:22","ip":"192.168.1.9","rssi":-42,"snr":30},{"mac":"AA:BB:CC:00:11:33","ip":"192.168.1.10","rssi":-55,"snr":24}]}}
+[ 1234.567 ] kernel panic - not syncing: Fatal exception
+= Test Time: 2, 2026-02-26 09:46:11 =
+CPU0: 10.0% usr 5.0% sys 0.0% nic 70.0% idle 0.0% io 2.0% irq 13.0% sirq
+CPU1: 8.0% usr 4.0% sys 0.0% nic 80.0% idle 0.0% io 1.0% irq 7.0% sirq
+--- CLIENTS Radio=2G ---
+{"data": {"total_size": 1, "client_list": [{"mac":"AA:BB:CC:00:11:44","ip":"192.168.1.11","rssi":-60,"snr":20}]}}
+sysmon: loop idle

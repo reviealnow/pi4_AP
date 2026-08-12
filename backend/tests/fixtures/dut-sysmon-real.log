@@ -1,0 +1,1525 @@
+# mode=serial source=/dev/cu.PL2303G-USBtoUART1130
+pwd
+/
+AP6_840E# 
+ls
+dev      sbin     kernel   lib      linuxrc  sys      tmpfw    ini
+bin      init     root     mnt      etc      var      vendor
+usr      storage  apps     www      proc     tmp      share
+AP6_840E# 
+
+
+*                                     snmptrap
+80211stats                            son_agent.sh
+Eudhcpc.sh                            sophos_log_gen.sh
+LED_blink_together_SOPHOS.sh          sort
+[                                     spectraltool
+[[                                    ssdk_sh
+acsdbgtool                            ssdp_app
+api_server                            ssidsteering
+apps_ver.txt                          ssl_client
+apstats                               start_all
+arp                                   start_all_ver.txt
+arping                                starteth.sh
+ash                                   stat
+athadhoc                              stats
+athkey                                strings
+athstats                              surecrypt
+athstatsclr                           sync
+avoid_loop.sh                         sync_wifi
+awk                                   sysctl
+base64                                syslogd
+board_config                          system_init
+brctl                                 tac
+bridge                                tail
+burn_in_test                          tar
+busybox                               taskmanager
+button_led_check.sh                   tc
+cat                                   tcpdump
+cfg80211tool                          telnet
+cfg80211tool.1                        test
+cfr_test_app                          tftp
+check_hyd.sh                          tftpd
+chmod                                 thermaltool
+cli                                   top
+cmp                                   touch
+console_term                          tpm2
+convert_env_for_fwsetenv.sh           tpm2_activatecredential
+core_dump_init.sh                     tpm2_certify
+cp                                    tpm2_certifyX509certutil
+cp_mongoose                           tpm2_certifycreation
+crc32                                 tpm2_changeauth
+curl                                  tpm2_changeeps
+cut                                   tpm2_changepps
+date                                  tpm2_checkquote
+dbclient                              tpm2_clear
+dbox_init                             tpm2_clearcontrol
+dd                                    tpm2_clockrateadjust
+de_header.sh                          tpm2_commit
+depmod                                tpm2_create
+dev_monitor                           tpm2_createak
+devmem                                tpm2_createek
+df                                    tpm2_createpolicy
+dh_file                               tpm2_createprimary
+dhcp6c                                tpm2_dictionarylockout
+dhcp6s                                tpm2_duplicate
+diff                                  tpm2_ecdhkeygen
+disktype                              tpm2_ecdhzgen
+dl.sh                                 tpm2_ecephemeral
+dmesg                                 tpm2_encryptdecrypt
+dnsdomainname                         tpm2_eventlog
+dnsmasq                               tpm2_evictcontrol
+dnsmasq_guest                         tpm2_flushcontext
+dropbear                              tpm2_getcap
+dropbear_c                            tpm2_getcommandauditdigest
+dropbearconvert                       tpm2_geteccparameters
+dumpleases                            tpm2_getekcertificate
+dynamic_vlan_check_mac_table.sh       tpm2_getpolicydigest
+dynamic_vlan_check_vlan_rule.sh       tpm2_getrandom
+dynamic_vlan_generate_vlan_config.sh  tpm2_getsessionauditdigest
+dynamic_vlan_get_sta_info.sh          tpm2_gettestresult
+eapol_test                            tpm2_gettime
+ebtables                              tpm2_hash
+echo                                  tpm2_hierarchycontrol
+edi_hplug                             tpm2_hmac
+ethtool                               tpm2_import
+expr                                  tpm2_incrementalselftest
+exttool                               tpm2_load
+ez-ipupdate                           tpm2_loadexternal
+factory_fetch                         tpm2_makecredential
+fallocate                             tpm2_nvcertify
+fatattr                               tpm2_nvdefine
+file_rename_and_copy.sh               tpm2_nvextend
+flash_erase                           tpm2_nvincrement
+flashcp                               tpm2_nvread
+free                                  tpm2_nvreadlock
+fsync                                 tpm2_nvreadpublic
+ftpd                                  tpm2_nvsetbits
+fupb                                  tpm2_nvundefine
+fupdate                               tpm2_nvwrite
+fupf                                  tpm2_nvwritelock
+fupi                                  tpm2_pcrallocate
+fw_printenv                           tpm2_pcrevent
+fw_setenv                             tpm2_pcrextend
+grep                                  tpm2_pcrread
+groups                                tpm2_pcrreset
+gzip                                  tpm2_policyauthorize
+halt                                  tpm2_policyauthorizenv
+hd                                    tpm2_policyauthvalue
+head                                  tpm2_policycommandcode
+header                                tpm2_policycountertimer
+hexdump                               tpm2_policycphash
+hostapd                               tpm2_policyduplicationselect
+hostapd1                              tpm2_policylocality
+hostapd2                              tpm2_policynamehash
+hostapd3                              tpm2_policynv
+hostapd_cli                           tpm2_policynvwritten
+hostname                              tpm2_policyor
+hyctl                                 tpm2_policypassword
+hyd-son                               tpm2_policypcr
+hyd.sh                                tpm2_policyrestart
+id                                    tpm2_policysecret
+ifconfig                              tpm2_policysigned
+init                                  tpm2_policytemplate
+insmod                                tpm2_policyticket
+ip                                    tpm2_print
+ipcs                                  tpm2_quote
+iperf3                                tpm2_rc_decode
+iptables                              tpm2_readclock
+iw                                    tpm2_readpublic
+iwconfig                              tpm2_rsadecrypt
+iwevent                               tpm2_rsaencrypt
+iwgetid                               tpm2_selftest
+iwlist                                tpm2_send
+iwpriv                                tpm2_sessionconfig
+iwspy                                 tpm2_setclock
+kill                                  tpm2_setcommandauditstatus
+killall                               tpm2_setprimarypolicy
+klogd                                 tpm2_shutdown
+lbd                                   tpm2_sign
+led_ctl                               tpm2_startauthsession
+link                                  tpm2_startup
+link_apps.sh                          tpm2_stirrandom
+linux32                               tpm2_testparms
+lldpcli                               tpm2_unseal
+lldpd                                 tpm2_verifysignature
+ln                                    tpm2_zgen2phase
+logd                                  traceroute
+logger                                true
+looptest                              truncate
+ls                                    tss2
+lsmod                                 tss2_authorizepolicy
+lsof                                  tss2_changeauth
+lspci                                 tss2_createkey
+mcs.conf                              tss2_createnv
+mcsd                                  tss2_createseal
+md5sum                                tss2_decrypt
+mem_burn-in.sh                        tss2_delete
+memtest.sh                            tss2_encrypt
+memtester-noProgress                  tss2_exportkey
+mkdir                                 tss2_exportpolicy
+mkfs.ubifs                            tss2_getappdata
+mknod                                 tss2_getcertificate
+modinfo                               tss2_getdescription
+modprobe                              tss2_getinfo
+mongoose                              tss2_getplatformcertificates
+mosquitto                             tss2_getrandom
+mosquitto_passwd                      tss2_gettpmblobs
+mosquitto_pub                         tss2_import
+mosquitto_sub                         tss2_list
+mount                                 tss2_nvextend
+mqtt.sh                               tss2_nvincrement
+msmtp                                 tss2_nvread
+mv                                    tss2_nvsetbits
+nanddump                              tss2_nvwrite
+nandtest                              tss2_pcrextend
+nandwrite                             tss2_pcrread
+nc                                    tss2_provision
+netstat                               tss2_quote
+nologin                               tss2_setappdata
+nsenter                               tss2_setcertificate
+nslookup                              tss2_setdescription
+ntpclient                             tss2_sign
+nuke                                  tss2_unseal
+openssl                               tss2_verifyquote
+opmode.sh                             tss2_verifysignature
+packet_capture                        tss2_writeauthorizenv
+partprobe                             ubiattach
+pass_sche_send_mail                   ubicrc32
+peerratestats                         ubidetach
+pgrep                                 ubiformat
+ping                                  ubimkvol
+ping6                                 ubinfo
+pkill                                 ubinize
+pktlogconf                            ubirename
+pktlogdump                            ubirmvol
+poestat                               ubirsvol
+poweroff                              ubiupdatevol
+printf                                udhcpc
+ps                                    udhcpd
+pwd                                   udpsvd
+qldtool                               umount
+qrtr-ns                               uname
+radartool                             unlink
+radclient                             unshare
+radiusd                               uptime
+rdisc6                                usg_insight_app
+reboot                                uuidgen
+reboot_reason_crash.sh                vconfig
+repacdcli                             vi
+resume                                wc
+rm                                    wifitool
+rmmod                                 wlanconfig
+route                                 wpa_action.sh
+sd                                    wpa_cli
+sd_cmd_inform_event_to_agent          wpa_passphrase
+sd_cmd_inform_event_to_agent_cp       wpa_supplicant
+sd_ctrl                               wpa_supplicant1
+sed                                   wpa_supplicant2
+sh                                    wpa_supplicant3
+sha3sum                               wps_enhc
+sleep                                 wsplcd-son
+smemcap                               wsplcd.sh
+snmpd                                 xargs
+snmpd_lldp_subagent                   xcontrol
+snmpd_subagent
+
+AP6_840E# [J
+
+*                                     snmptrap
+80211stats                            son_agent.sh
+Eudhcpc.sh                            sophos_log_gen.sh
+LED_blink_together_SOPHOS.sh          sort
+[                                     spectraltool
+[[                                    ssdk_sh
+acsdbgtool                            ssdp_app
+api_server                            ssidsteering
+apps_ver.txt                          ssl_client
+apstats                               start_all
+arp                                   start_all_ver.txt
+arping                                starteth.sh
+ash                                   stat
+athadhoc                              stats
+athkey                                strings
+athstats                              surecrypt
+athstatsclr                           sync
+avoid_loop.sh                         sync_wifi
+awk                                   sysctl
+base64                                syslogd
+board_config                          system_init
+brctl                                 tac
+bridge                                tail
+burn_in_test                          tar
+busybox                               taskmanager
+button_led_check.sh                   tc
+cat                                   tcpdump
+cfg80211tool                          telnet
+cfg80211tool.1                        test
+cfr_test_app                          tftp
+check_hyd.sh                          tftpd
+chmod                                 thermaltool
+cli                                   top
+cmp                                   touch
+console_term                          tpm2
+convert_env_for_fwsetenv.sh           tpm2_activatecredential
+core_dump_init.sh                     tpm2_certify
+cp                                    tpm2_certifyX509certutil
+cp_mongoose                           tpm2_certifycreation
+crc32                                 tpm2_changeauth
+curl                                  tpm2_changeeps
+cut                                   tpm2_changepps
+date                                  tpm2_checkquote
+dbclient                              tpm2_clear
+dbox_init                             tpm2_clearcontrol
+dd                                    tpm2_clockrateadjust
+de_header.sh                          tpm2_commit
+depmod                                tpm2_create
+dev_monitor                           tpm2_createak
+devmem                                tpm2_createek
+df                                    tpm2_createpolicy
+dh_file                               tpm2_createprimary
+dhcp6c                                tpm2_dictionarylockout
+dhcp6s                                tpm2_duplicate
+diff                                  tpm2_ecdhkeygen
+disktype                              tpm2_ecdhzgen
+dl.sh                                 tpm2_ecephemeral
+dmesg                                 tpm2_encryptdecrypt
+dnsdomainname                         tpm2_eventlog
+dnsmasq                               tpm2_evictcontrol
+dnsmasq_guest                         tpm2_flushcontext
+dropbear                              tpm2_getcap
+dropbear_c                            tpm2_getcommandauditdigest
+dropbearconvert                       tpm2_geteccparameters
+dumpleases                            tpm2_getekcertificate
+dynamic_vlan_check_mac_table.sh       tpm2_getpolicydigest
+dynamic_vlan_check_vlan_rule.sh       tpm2_getrandom
+dynamic_vlan_generate_vlan_config.sh  tpm2_getsessionauditdigest
+dynamic_vlan_get_sta_info.sh          tpm2_gettestresult
+eapol_test                            tpm2_gettime
+ebtables                              tpm2_hash
+echo                                  tpm2_hierarchycontrol
+edi_hplug                             tpm2_hmac
+ethtool                               tpm2_import
+expr                                  tpm2_incrementalselftest
+exttool                               tpm2_load
+ez-ipupdate                           tpm2_loadexternal
+factory_fetch                         tpm2_makecredential
+fallocate                             tpm2_nvcertify
+fatattr                               tpm2_nvdefine
+file_rename_and_copy.sh               tpm2_nvextend
+flash_erase                           tpm2_nvincrement
+flashcp                               tpm2_nvread
+free                                  tpm2_nvreadlock
+fsync                                 tpm2_nvreadpublic
+ftpd                                  tpm2_nvsetbits
+fupb                                  tpm2_nvundefine
+fupdate                               tpm2_nvwrite
+fupf                                  tpm2_nvwritelock
+fupi                                  tpm2_pcrallocate
+fw_printenv                           tpm2_pcrevent
+fw_setenv                             tpm2_pcrextend
+grep                                  tpm2_pcrread
+groups                                tpm2_pcrreset
+gzip                                  tpm2_policyauthorize
+halt                                  tpm2_policyauthorizenv
+hd                                    tpm2_policyauthvalue
+head                                  tpm2_policycommandcode
+header                                tpm2_policycountertimer
+hexdump                               tpm2_policycphash
+hostapd                               tpm2_policyduplicationselect
+hostapd1                              tpm2_policylocality
+hostapd2                              tpm2_policynamehash
+hostapd3                              tpm2_policynv
+hostapd_cli                           tpm2_policynvwritten
+hostname                              tpm2_policyor
+hyctl                                 tpm2_policypassword
+hyd-son                               tpm2_policypcr
+hyd.sh                                tpm2_policyrestart
+id                                    tpm2_policysecret
+ifconfig                              tpm2_policysigned
+init                                  tpm2_policytemplate
+insmod                                tpm2_policyticket
+ip                                    tpm2_print
+ipcs                                  tpm2_quote
+iperf3                                tpm2_rc_decode
+iptables                              tpm2_readclock
+iw                                    tpm2_readpublic
+iwconfig                              tpm2_rsadecrypt
+iwevent                               tpm2_rsaencrypt
+iwgetid                               tpm2_selftest
+iwlist                                tpm2_send
+iwpriv                                tpm2_sessionconfig
+iwspy                                 tpm2_setclock
+kill                                  tpm2_setcommandauditstatus
+killall                               tpm2_setprimarypolicy
+klogd                                 tpm2_shutdown
+lbd                                   tpm2_sign
+led_ctl                               tpm2_startauthsession
+link                                  tpm2_startup
+link_apps.sh                          tpm2_stirrandom
+linux32                               tpm2_testparms
+lldpcli                               tpm2_unseal
+lldpd                                 tpm2_verifysignature
+ln                                    tpm2_zgen2phase
+logd                                  traceroute
+logger                                true
+looptest                              truncate
+ls                                    tss2
+lsmod                                 tss2_authorizepolicy
+lsof                                  tss2_changeauth
+lspci                                 tss2_createkey
+mcs.conf                              tss2_createnv
+mcsd                                  tss2_createseal
+md5sum                                tss2_decrypt
+mem_burn-in.sh                        tss2_delete
+memtest.sh                            tss2_encrypt
+memtester-noProgress                  tss2_exportkey
+mkdir                                 tss2_exportpolicy
+mkfs.ubifs                            tss2_getappdata
+mknod                                 tss2_getcertificate
+modinfo                               tss2_getdescription
+modprobe                              tss2_getinfo
+mongoose                              tss2_getplatformcertificates
+mosquitto                             tss2_getrandom
+mosquitto_passwd                      tss2_gettpmblobs
+mosquitto_pub                         tss2_import
+mosquitto_sub                         tss2_list
+mount                                 tss2_nvextend
+mqtt.sh                               tss2_nvincrement
+msmtp                                 tss2_nvread
+mv                                    tss2_nvsetbits
+nanddump                              tss2_nvwrite
+nandtest                              tss2_pcrextend
+nandwrite                             tss2_pcrread
+nc                                    tss2_provision
+netstat                               tss2_quote
+nologin                               tss2_setappdata
+nsenter                               tss2_setcertificate
+nslookup                              tss2_setdescription
+ntpclient                             tss2_sign
+nuke                                  tss2_unseal
+openssl                               tss2_verifyquote
+opmode.sh                             tss2_verifysignature
+packet_capture                        tss2_writeauthorizenv
+partprobe                             ubiattach
+pass_sche_send_mail                   ubicrc32
+peerratestats                         ubidetach
+pgrep                                 ubiformat
+ping                                  ubimkvol
+ping6                                 ubinfo
+pkill                                 ubinize
+pktlogconf                            ubirename
+pktlogdump                            ubirmvol
+poestat                               ubirsvol
+poweroff                              ubiupdatevol
+printf                                udhcpc
+ps                                    udhcpd
+pwd                                   udpsvd
+qldtool                               umount
+qrtr-ns                               uname
+radartool                             unlink
+radclient                             unshare
+radiusd                               uptime
+rdisc6                                usg_insight_app
+reboot                                uuidgen
+reboot_reason_crash.sh                vconfig
+repacdcli                             vi
+resume                                wc
+rm                                    wifitool
+rmmod                                 wlanconfig
+route                                 wpa_action.sh
+sd                                    wpa_cli
+sd_cmd_inform_event_to_agent          wpa_passphrase
+sd_cmd_inform_event_to_agent_cp       wpa_supplicant
+sd_ctrl                               wpa_supplicant1
+sed                                   wpa_supplicant2
+sh                                    wpa_supplicant3
+sha3sum                               wps_enhc
+sleep                                 wsplcd-son
+smemcap                               wsplcd.sh
+snmpd                                 xargs
+snmpd_lldp_subagent                   xcontrol
+snmpd_subagent
+
+AP6_840E# [J
+
+*                                     snmptrap
+80211stats                            son_agent.sh
+Eudhcpc.sh                            sophos_log_gen.sh
+LED_blink_together_SOPHOS.sh          sort
+[                                     spectraltool
+[[                                    ssdk_sh
+acsdbgtool                            ssdp_app
+api_server                            ssidsteering
+apps_ver.txt                          ssl_client
+apstats                               start_all
+arp                                   start_all_ver.txt
+arping                                starteth.sh
+ash                                   stat
+athadhoc                              stats
+athkey                                strings
+athstats                              surecrypt
+athstatsclr                           sync
+avoid_loop.sh                         sync_wifi
+awk                                   sysctl
+base64                                syslogd
+board_config                          system_init
+brctl                                 tac
+bridge                                tail
+burn_in_test                          tar
+busybox                               taskmanager
+button_led_check.sh                   tc
+cat                                   tcpdump
+cfg80211tool                          telnet
+cfg80211tool.1                        test
+cfr_test_app                          tftp
+check_hyd.sh                          tftpd
+chmod                                 thermaltool
+cli                                   top
+cmp                                   touch
+console_term                          tpm2
+convert_env_for_fwsetenv.sh           tpm2_activatecredential
+core_dump_init.sh                     tpm2_certify
+cp                                    tpm2_certifyX509certutil
+cp_mongoose                           tpm2_certifycreation
+crc32                                 tpm2_changeauth
+curl                                  tpm2_changeeps
+cut                                   tpm2_changepps
+date                                  tpm2_checkquote
+dbclient                              tpm2_clear
+dbox_init                             tpm2_clearcontrol
+dd                                    tpm2_clockrateadjust
+de_header.sh                          tpm2_commit
+depmod                                tpm2_create
+dev_monitor                           tpm2_createak
+devmem                                tpm2_createek
+df                                    tpm2_createpolicy
+dh_file                               tpm2_createprimary
+dhcp6c                                tpm2_dictionarylockout
+dhcp6s                                tpm2_duplicate
+diff                                  tpm2_ecdhkeygen
+disktype                              tpm2_ecdhzgen
+dl.sh                                 tpm2_ecephemeral
+dmesg                                 tpm2_encryptdecrypt
+dnsdomainname                         tpm2_eventlog
+dnsmasq                               tpm2_evictcontrol
+dnsmasq_guest                         tpm2_flushcontext
+dropbear                              tpm2_getcap
+dropbear_c                            tpm2_getcommandauditdigest
+dropbearconvert                       tpm2_geteccparameters
+dumpleases                            tpm2_getekcertificate
+dynamic_vlan_check_mac_table.sh       tpm2_getpolicydigest
+dynamic_vlan_check_vlan_rule.sh       tpm2_getrandom
+dynamic_vlan_generate_vlan_config.sh  tpm2_getsessionauditdigest
+dynamic_vlan_get_sta_info.sh          tpm2_gettestresult
+eapol_test                            tpm2_gettime
+ebtables                              tpm2_hash
+echo                                  tpm2_hierarchycontrol
+edi_hplug                             tpm2_hmac
+ethtool                               tpm2_import
+expr                                  tpm2_incrementalselftest
+exttool                               tpm2_load
+ez-ipupdate                           tpm2_loadexternal
+factory_fetch                         tpm2_makecredential
+fallocate                             tpm2_nvcertify
+fatattr                               tpm2_nvdefine
+file_rename_and_copy.sh               tpm2_nvextend
+flash_erase                           tpm2_nvincrement
+flashcp                               tpm2_nvread
+free                                  tpm2_nvreadlock
+fsync                                 tpm2_nvreadpublic
+ftpd                                  tpm2_nvsetbits
+fupb                                  tpm2_nvundefine
+fupdate                               tpm2_nvwrite
+fupf                                  tpm2_nvwritelock
+fupi                                  tpm2_pcrallocate
+fw_printenv                           tpm2_pcrevent
+fw_setenv                             tpm2_pcrextend
+grep                                  tpm2_pcrread
+groups                                tpm2_pcrreset
+gzip                                  tpm2_policyauthorize
+halt                                  tpm2_policyauthorizenv
+hd                                    tpm2_policyauthvalue
+head                                  tpm2_policycommandcode
+header                                tpm2_policycountertimer
+hexdump                               tpm2_policycphash
+hostapd                               tpm2_policyduplicationselect
+hostapd1                              tpm2_policylocality
+hostapd2                              tpm2_policynamehash
+hostapd3                              tpm2_policynv
+hostapd_cli                           tpm2_policynvwritten
+hostname                              tpm2_policyor
+hyctl                                 tpm2_policypassword
+hyd-son                               tpm2_policypcr
+hyd.sh                                tpm2_policyrestart
+id                                    tpm2_policysecret
+ifconfig                              tpm2_policysigned
+init                                  tpm2_policytemplate
+insmod                                tpm2_policyticket
+ip                                    tpm2_print
+ipcs                                  tpm2_quote
+iperf3                                tpm2_rc_decode
+iptables                              tpm2_readclock
+iw                                    tpm2_readpublic
+iwconfig                              tpm2_rsadecrypt
+iwevent                               tpm2_rsaencrypt
+iwgetid                               tpm2_selftest
+iwlist                                tpm2_send
+iwpriv                                tpm2_sessionconfig
+iwspy                                 tpm2_setclock
+kill                                  tpm2_setcommandauditstatus
+killall                               tpm2_setprimarypolicy
+klogd                                 tpm2_shutdown
+lbd                                   tpm2_sign
+led_ctl                               tpm2_startauthsession
+link                                  tpm2_startup
+link_apps.sh                          tpm2_stirrandom
+linux32                               tpm2_testparms
+lldpcli                               tpm2_unseal
+lldpd                                 tpm2_verifysignature
+ln                                    tpm2_zgen2phase
+logd                                  traceroute
+logger                                true
+looptest                              truncate
+ls                                    tss2
+lsmod                                 tss2_authorizepolicy
+lsof                                  tss2_changeauth
+lspci                                 tss2_createkey
+mcs.conf                              tss2_createnv
+mcsd                                  tss2_createseal
+md5sum                                tss2_decrypt
+mem_burn-in.sh                        tss2_delete
+memtest.sh                            tss2_encrypt
+memtester-noProgress                  tss2_exportkey
+mkdir                                 tss2_exportpolicy
+mkfs.ubifs                            tss2_getappdata
+mknod                                 tss2_getcertificate
+modinfo                               tss2_getdescription
+modprobe                              tss2_getinfo
+mongoose                              tss2_getplatformcertificates
+mosquitto                             tss2_getrandom
+mosquitto_passwd                      tss2_gettpmblobs
+mosquitto_pub                         tss2_import
+mosquitto_sub                         tss2_list
+mount                                 tss2_nvextend
+mqtt.sh                               tss2_nvincrement
+msmtp                                 tss2_nvread
+mv                                    tss2_nvsetbits
+nanddump                              tss2_nvwrite
+nandtest                              tss2_pcrextend
+nandwrite                             tss2_pcrread
+nc                                    tss2_provision
+netstat                               tss2_quote
+nologin                               tss2_setappdata
+nsenter                               tss2_setcertificate
+nslookup                              tss2_setdescription
+ntpclient                             tss2_sign
+nuke                                  tss2_unseal
+openssl                               tss2_verifyquote
+opmode.sh                             tss2_verifysignature
+packet_capture                        tss2_writeauthorizenv
+partprobe                             ubiattach
+pass_sche_send_mail                   ubicrc32
+peerratestats                         ubidetach
+pgrep                                 ubiformat
+ping                                  ubimkvol
+ping6                                 ubinfo
+pkill                                 ubinize
+pktlogconf                            ubirename
+pktlogdump                            ubirmvol
+poestat                               ubirsvol
+poweroff                              ubiupdatevol
+printf                                udhcpc
+ps                                    udhcpd
+pwd                                   udpsvd
+qldtool                               umount
+qrtr-ns                               uname
+radartool                             unlink
+radclient                             unshare
+radiusd                               uptime
+rdisc6                                usg_insight_app
+reboot                                uuidgen
+reboot_reason_crash.sh                vconfig
+repacdcli                             vi
+resume                                wc
+rm                                    wifitool
+rmmod                                 wlanconfig
+route                                 wpa_action.sh
+sd                                    wpa_cli
+sd_cmd_inform_event_to_agent          wpa_passphrase
+sd_cmd_inform_event_to_agent_cp       wpa_supplicant
+sd_ctrl                               wpa_supplicant1
+sed                                   wpa_supplicant2
+sh                                    wpa_supplicant3
+sha3sum                               wps_enhc
+sleep                                 wsplcd-son
+smemcap                               wsplcd.sh
+snmpd                                 xargs
+snmpd_lldp_subagent                   xcontrol
+snmpd_subagent
+
+AP6_840E# [J
+sh /mnt/data/sysMon001.sh 60s 10m
+Start time: 2026-06-09 03:45:34
+Step: 60s (60s), Duration: 10m (600s)
+
+=====================================================================================
+= Test Time: 1, 2026-06-09 03:45:34                                              =
+=====================================================================================
+=== CPU Utilization =================================================================
+CPU0:   0.0% usr   4.9% sys   0.0% nic  86.4% idle   0.0% io   1.0% irq   7.8%% sirq
+CPU1:   1.0% usr   0.0% sys   0.0% nic  98.0% idle   0.0% io   0.0% irq   1.0%% sirq
+CPU2:   0.0% usr   4.0% sys   0.0% nic  95.0% idle   0.0% io   1.0% irq   0.0%% sirq
+CPU3:   0.0% usr   0.0% sys   0.0% nic 100.0% idle   0.0% io   0.0% irq   0.0%% sirq
+
+=== CPU Hotspot (top threads by %CPU) ===============================================
+
+=== Interrupt / SoftIRQ Hotspot (Δ=1s) =============================================
+--- /proc/interrupts (Top 10 by delta, auto classify WIFI/ETH/OTHER) ---------------
+36:       1053 OTHER nss_queue0
+46:       1010 OTHER nss_queue0
+97:        471 OTHER ce2
+125:        377 OTHER ppdu-end-interrupts-mac1
+18:        309 OTHER arch_timer
+123:        167 OTHER ppdu-end-interrupts-mac3
+64:         73 WIFI pci0_wlan_ce_2
+96:         24 OTHER ce1
+33:         21 OTHER nss_empty_buf_sos
+70:         14 WIFI pci0_wlan_grp_dp_3
+
+--- /proc/softirqs (delta per class, sum all CPUs) ---------------------------------
+NET_RX           2656
+TASKLET           585
+RCU               319
+TIMER             290
+SCHED             266
+NET_TX              1
+BLOCK               0
+BLOCK_IOPOLL            0
+HI                  0
+HRTIMER             0
+
+=== Memory Utilization (/proc/meminfo) ==============================================
+----- cat /proc/meminfo -----
+MemTotal:         843132 kB
+MemFree:          391540 kB
+MemAvailable:     475472 kB
+Buffers:           16136 kB
+Cached:           106880 kB
+SwapCached:            0 kB
+Active:            80904 kB
+Inactive:          52776 kB
+Active(anon):      40904 kB
+Inactive(anon):      992 kB
+Active(file):      40000 kB
+Inactive(file):    51784 kB
+Unevictable:           0 kB
+Mlocked:               0 kB
+HighTotal:             0 kB
+HighFree:              0 kB
+LowTotal:         843132 kB
+LowFree:          391540 kB
+SwapTotal:             0 kB
+SwapFree:              0 kB
+Dirty:                 0 kB
+Writeback:             0 kB
+AnonPages:         10540 kB
+Mapped:            16512 kB
+Shmem:             31232 kB
+Slab:             164708 kB
+SReclaimable:       5800 kB
+SUnreclaim:       158908 kB
+KernelStack:        1656 kB
+PageTables:          584 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:      421564 kB
+Committed_AS:      69296 kB
+VmallocTotal:    1048576 kB
+VmallocUsed:           0 kB
+VmallocChunk:          0 kB
+
+=== Disk Utilization (df) ===========================================================
+----- df -----
+Filesystem           1024-blocks    Used Available Use% Mounted on
+/dev/shm/tmp/            98304      9676     88628  10% /mnt/tmpfs
+/dev/shm/tmpfw/          81920         0     81920   0% /mnt/tmpfw
+ubi20:storage            32644       384     30552   1% /storage
+/dev/mtdblock35          21248     21248         0 100% /apps
+/dev/mtdblock36           4608      4608         0 100% /lib/firmware/IPQ8074/WIFI_FW
+ubi24:syslog             32644        36     30896   0% /mnt/syslog
+ubi28:Reserved           51300       384     48268   1% /mnt/reserved
+ubi25:core_dump           9324        24      8764   0% /mnt/core_dump
+ubi27:Agent              45704      6704     36632  15% /mnt/data
+shmData                  20480     17152      3328  84% /mnt/usageInsight
+
+=== Interface Status ================================================================
+----- ethtool eth1 ----------------------------------------------------------
+Uplink Port Interface: eth1 | Speed: 100Mb/s | Duplex: Full | Port: MII | Auto-negotiation: on | Link detected: yes
+
+----- ifconfig (all interfaces) -----------------------------------------------------
+ath0      Link encap:Ethernet  HWaddr 02:00:00:00:00:01  
+          inet6 addr: fe80::ff:fe00:1/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:10000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+ath16     Link encap:Ethernet  HWaddr 02:00:00:00:00:02  
+          inet6 addr: fe80::ff:fe00:2/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:62418 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:623887 errors:36 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:10000 
+          RX bytes:14423954 (13.7 MiB)  TX bytes:854945729 (815.3 MiB)
+
+ath32     Link encap:Ethernet  HWaddr 02:00:00:00:00:03  
+          inet6 addr: fe80::ff:fe00:3/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:10000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+br-lan    Link encap:Ethernet  HWaddr 02:00:00:00:00:04  
+          inet addr:192.168.0.163  Bcast:192.168.0.255  Mask:255.255.255.0
+          inet6 addr: fe80::ff:fe00:4/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:1432967 errors:0 dropped:28 overruns:0 frame:0
+          TX packets:165927 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:143934468 (137.2 MiB)  TX bytes:33801440 (32.2 MiB)
+
+eth0      Link encap:Ethernet  HWaddr 02:00:00:00:00:05  
+          UP BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:10000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+          Base address:0x1800 
+
+eth1      Link encap:Ethernet  HWaddr 02:00:00:00:00:04  
+          inet6 addr: fe80::ff:fe00:4/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:2438956 errors:0 dropped:45117 overruns:0 frame:0
+          TX packets:290282 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:10000 
+          RX bytes:1070183413 (1020.6 MiB)  TX bytes:60845075 (58.0 MiB)
+          Base address:0x1a00 
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:1007011 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:1007011 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1 
+          RX bytes:204085692 (194.6 MiB)  TX bytes:204085692 (194.6 MiB)
+
+wifi0     Link encap:Ethernet  HWaddr 02:00:00:00:00:02  
+          inet6 addr: fe80::ff:fe00:2/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:62824 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:2024179 errors:36 dropped:36 overruns:0 carrier:0
+          collisions:0 txqueuelen:10000 
+          RX bytes:14465206 (13.7 MiB)  TX bytes:958005404 (913.6 MiB)
+
+wifi1     Link encap:Ethernet  HWaddr 02:00:00:00:00:01  
+          inet6 addr: fe80::ff:fe00:1/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:1453520 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:10000 
+          RX bytes:0 (0.0 B)  TX bytes:129773525 (123.7 MiB)
+
+wifi2     Link encap:Ethernet  HWaddr 02:00:00:00:00:06  
+          inet6 addr: fe80::ff:fe00:5/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:1453543 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:10000 
+          RX bytes:0 (0.0 B)  TX bytes:129775040 (123.7 MiB)
+
+
+=== Wi-Fi Status (iwconfig) =========================================================
+ath0      IEEE 802.11axg  ESSID:"!!3290-1"  
+          Mode:Master  Frequency:2.437 GHz (Channel 6)  Access Point: 02:00:00:00:00:01   
+          Bit Rate:573.5 Mb/s   Tx-Power:29 dBm   
+          RTS thr:off   Fragment thr:off
+          Encryption key:7D70-DA52-6ED6-19C1-F6D3-A1A3-F303-8205   Security mode:open
+          Power Management:off
+          Link Quality=0/94  Signal level=-93 dBm  Noise level=-93 dBm (BDF averaged NF value in dBm)
+          Rx invalid nwid:31036  Rx invalid crypt:0  Rx invalid frag:0
+          Tx excessive retries:0  Invalid misc:0   Missed beacon:0
+
+
+ath32     IEEE 802.11axa  ESSID:"!!3290-1"  
+          Mode:Master  Frequency:6.415 GHz (Channel 93)  Access Point: 02:00:00:00:00:03   
+          Bit Rate:2.4019 Gb/s   Tx-Power:9 dBm   
+          RTS thr:off   Fragment thr:off
+          Encryption key:17C6-D1C8-173B-4CDA-AD5D-C66F-63C8-F87D   Security mode:open
+          Power Management:off
+          Link Quality=0/94  Signal level=-95 dBm  Noise level=-95 dBm (BDF averaged NF value in dBm)
+          Rx invalid nwid:30924  Rx invalid crypt:0  Rx invalid frag:0
+          Tx excessive retries:0  Invalid misc:0   Missed beacon:0
+
+
+ath16     IEEE 802.11axa  ESSID:"!!3290-1"  
+          Mode:Master  Frequency:5.18 GHz (Channel 36)  Access Point: 02:00:00:00:00:02   
+          Bit Rate:1.1471 Gb/s   Tx-Power:23 dBm   
+          RTS thr:off   Fragment thr:off
+          Encryption key:81D0-6356-FFFD-660A-8E39-7991-175F-E3BC   Security mode:open
+          Power Management:off
+          Link Quality=0/94  Signal level=-91 dBm  Noise level=-91 dBm (BDF averaged NF value in dBm)
+          Rx invalid nwid:144194  Rx invalid crypt:0  Rx invalid frag:0
+          Tx excessive retries:0  Invalid misc:0   Missed beacon:0
+
+
+
+=== CURL Hooks ======================================================================
+{"data":{"model_name":"AP6 840E","product_name":"AP6840E-SN0000000000000","modelrev":"Rev.1","assembly_revision":"01","uptime":"6 days 18:10:52 ","system_time":"2026/06/09 03:45:37","firmware_version":"1.10.336","sophos_firmware_version":"1.10.3011","mac_address":"02:00:00:00:00:04","management_vlan_id":1,"ip_address":"192.168.0.163","default_gateway":"192.168.0.1","dns_server":"192.168.0.1,8.8.8.8","dhcp_server":"192.168.0.1","ipv6_address":"---","ipv6_link_local_address":"fe80::ff:fe00:4/64","sn_number":"SN0000000000000","workload":{"cpu_load":4,"mem_load":53,"tx_bytes":60845075,"rx_bytes":1070184091,"tx":"60.8 MBytes","rx":"1.0 GBytes","connected_clients":0},"power_statistics":{"type":"POE","pse_name":"","pse_description":"","requested_power":"40.0 W","available_power":"40.0 W","power_class":"802.3bt","expected_power_class":"802.3bt","insufficient_power":"No"}},"error_code":0,"error_msg":""}
+{"data":{"temperatures":{"cpu":{"core0":"53","core1":"53","core2":"53","core3":"52"},"radio":{"wifi0":"69","wifi1":"52","wifi2":"57"}},"ecc":{"mtd21":{"ecc_failed":0,"ecc_corrected":9,"number_of_bad_blocks":0},"mtd23":{"ecc_failed":0,"ecc_corrected":0,"number_of_bad_blocks":0}}},"error_code":0,"error_msg":""}
+{"data":{"radio_name":"Wireless 2.4G","status":"Enabled","mac_address":"02:00:00:00:00:01","channel":"Ch 6","channel_utilization":"89%","tx_power":"100%","rssi":"0"},"error_code":0,"error_msg":""}
+ath8      no frequency information.
+
+{"data":{"radio_name":"Wireless 5G","status":"Enabled","mac_address":"02:00:00:00:00:02","channel":"Ch 36 + 40 + 36 + 36","channel_utilization":"58%","tx_power":"100%","rssi":"-56"},"error_code":0,"error_msg":""}
+{"data":{"radio_name":"Wireless 6G","status":"Enabled","mac_address":"02:00:00:00:00:03","channel":"Ch 81 + 85 + 89 + 93","channel_utilization":"10%","tx_power":"100%","rssi":"-56"},"error_code":0,"error_msg":""}
+{"data":{"client_list":[],"total_size":0},"error_code":0,"error_msg":""}
+{"data":{"client_list":[],"total_size":0},"error_code":0,"error_msg":""}
+{"data":{"client_list":[],"total_size":0},"error_code":0,"error_msg":""}
+
+=== Process Status (VSZ != 0) =======================================================
+  PID USER       VSZ STAT COMMAND
+    1 0         1108 S    init
+  331 0          720 S    /sbin/console_term
+ 1231 0        13304 S    /sbin/sd
+ 1243 0         1192 S    edi_hplug
+ 1247 0         9984 S    /sbin/logd -d 1
+ 1249 0         1108 S    /sbin/syslogd -s 128 -b 1 -k 0 -t
+ 1263 0          772 S    /sbin/iwevent
+ 1405 0          740 S    /sbin/udhcpc -f -l -Z -i br-lan -s /etc/udhcpc/udhcp
+ 1412 0         1088 S    lldpd -M 4 -S Sophos AP6 840E
+ 2122 0          728 S    /sbin/qrtr-ns
+ 3311 0         4900 S    /sbin/hostapd3 -P /var/hostapd3.pid -B /etc/hostapd3
+ 3697 0         5720 S    /sbin/dropbear -l /sbin/console_term -p 127.0.0.1:33
+ 3718 0         8328 S    /sbin/taskmanager
+ 4110 0        14376 S    mongoose /www/mongoose.config -g /www/.htpasswd
+ 4114 0        15048 S    api_server /etc/api_server.conf -g /www/.htpasswd
+ 4572 0         4884 S    /sbin/hostapd1 -P /var/hostapd.pid -B /etc/hostapd1.
+ 5054 0         4988 S    /sbin/hostapd2 -P /var/hostapd2.pid -B /etc/hostapd2
+ 5192 0         1112 S    sh /tmp/ip6_auto_config
+ 5231 0         4136 S    /sbin/usg_insight_app
+ 6233 0         1124 S    {sophos_runner.s} /bin/sh /mnt/data/iss_config/curre
+ 6255 0         8880 S    {sophos-wifix-ag} /mnt/data/iss_config/current_confi
+ 7003 0         1132 S    /bin/sh
+17305 0         1056 S    /sbin/dnsmasq -C /etc/dnsmasq.conf -k
+19011 0         1132 S    sh /mnt/data/sysMon001.sh 60s 10m
+19331 0          732 S    rdisc6 -1 -r1 br-lan
+19350 0         1108 S    sleep 15
+19387 0         1108 R    ps
+19388 0         1108 S    awk NR==1 || $3 != 0
+
+=== Process Details =================================================================
+Process: init            | PID: 1     | VmSize: 1108 kB    | VmRSS: 736 kB     | VmData: 20 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 588828   | nonvol_ctxt: 310     
+Process: sd              | PID: 1231  | VmSize: 13304 kB   | VmRSS: 8736 kB    | VmData: 2820 kB    | VmSwap: 0 kB     | Threads: 2    | CPU: 0-3  | vol_ctxt: 4625396  | nonvol_ctxt: 178270  
+Process: edi_hplug       | PID: 1243  | VmSize: 1192 kB    | VmRSS: 576 kB     | VmData: 120 kB     | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 273      | nonvol_ctxt: 3       
+Process: logd            | PID: 1247  | VmSize: 9984 kB    | VmRSS: 1148 kB    | VmData: 128 kB     | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 84596    | nonvol_ctxt: 18355   
+Process: syslogd         | PID: 1249  | VmSize: 1108 kB    | VmRSS: 32 kB      | VmData: 20 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 38933    | nonvol_ctxt: 1       
+Process: iwevent         | PID: 1263  | VmSize: 772 kB     | VmRSS: 460 kB     | VmData: 20 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 1751313  | nonvol_ctxt: 12      
+Process: udhcpc          | PID: 1405  | VmSize: 740 kB     | VmRSS: 428 kB     | VmData: 20 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 46078    | nonvol_ctxt: 2       
+Process: lldpd           | PID: 1412  | VmSize: 1088 kB    | VmRSS: 44 kB      | VmData: 76 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 1863879  | nonvol_ctxt: 13      
+Process: dnsmasq         | PID: 17305 | VmSize: 1056 kB    | VmRSS: 472 kB     | VmData: 48 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 2        | nonvol_ctxt: 1       
+Process: sh              | PID: 19011 | VmSize: 1136 kB    | VmRSS: 956 kB     | VmData: 48 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 117      | nonvol_ctxt: 1       
+Process: rdisc6          | PID: 19331 | VmSize: 732 kB     | VmRSS: 484 kB     | VmData: 20 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 1        | nonvol_ctxt: 1       
+Process: sleep           | PID: 19350 | VmSize: 1108 kB    | VmRSS: 472 kB     | VmData: 20 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 1        | nonvol_ctxt: 3       
+Process: qrtr-ns         | PID: 2122  | VmSize: 728 kB     | VmRSS: 28 kB      | VmData: 20 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 6        | nonvol_ctxt: 0       
+Process: console_term    | PID: 331   | VmSize: 720 kB     | VmRSS: 408 kB     | VmData: 20 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 27       | nonvol_ctxt: 2       
+Process: hostapd3        | PID: 3311  | VmSize: 4900 kB    | VmRSS: 1860 kB    | VmData: 68 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 1808430  | nonvol_ctxt: 29      
+Process: dropbear        | PID: 3697  | VmSize: 5720 kB    | VmRSS: 108 kB     | VmData: 132 kB     | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 1        | nonvol_ctxt: 0       
+Process: taskmanager     | PID: 3718  | VmSize: 8328 kB    | VmRSS: 2620 kB    | VmData: 328 kB     | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 1139406  | nonvol_ctxt: 64471   
+Process: mongoose        | PID: 4110  | VmSize: 14376 kB   | VmRSS: 6204 kB    | VmData: 1948 kB    | VmSwap: 0 kB     | Threads: 12   | CPU: 0-3  | vol_ctxt: 583707   | nonvol_ctxt: 6       
+Process: api_server      | PID: 4114  | VmSize: 15048 kB   | VmRSS: 4900 kB    | VmData: 2640 kB    | VmSwap: 0 kB     | Threads: 12   | CPU: 0-3  | vol_ctxt: 583708   | nonvol_ctxt: 3       
+Process: hostapd1        | PID: 4572  | VmSize: 4884 kB    | VmRSS: 2072 kB    | VmData: 52 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 1812532  | nonvol_ctxt: 31      
+Process: hostapd2        | PID: 5054  | VmSize: 4988 kB    | VmRSS: 2036 kB    | VmData: 156 kB     | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 1805514  | nonvol_ctxt: 45      
+Process: sh              | PID: 5192  | VmSize: 1112 kB    | VmRSS: 864 kB     | VmData: 24 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 195700   | nonvol_ctxt: 17      
+Process: usg_insight_app | PID: 5231  | VmSize: 4136 kB    | VmRSS: 1668 kB    | VmData: 28 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 15822    | nonvol_ctxt: 2       
+Process: sophos_runner.s | PID: 6233  | VmSize: 1124 kB    | VmRSS: 944 kB     | VmData: 36 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 77766    | nonvol_ctxt: 12      
+Process: sophos-wifix-ag | PID: 6255  | VmSize: 8880 kB    | VmRSS: 7928 kB    | VmData: 2976 kB    | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 302350   | nonvol_ctxt: 24504   
+Process: sh              | PID: 7003  | VmSize: 1132 kB    | VmRSS: 472 kB     | VmData: 44 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 32       | nonvol_ctxt: 7       
+
+=== Wi-Fi Client List ===============================================================
+
+
+
+[583872.723758] 
+[583872.730506] 
+[583872.767389] 
+[583872.778895] 
+[583872.781863] 
+[583872.789255] 
+=====================================================================================
+= Test Time: 2, 2026-06-09 03:46:48                                              =
+=====================================================================================
+=== CPU Utilization =================================================================
+CPU0:   6.0% usr   2.0% sys   0.0% nic  85.0% idle   0.0% io   0.0% irq   7.0%% sirq
+CPU1:   2.0% usr   2.0% sys   0.0% nic  96.0% idle   0.0% io   0.0% irq   0.0%% sirq
+CPU2:   0.0% usr   4.0% sys   0.0% nic  96.0% idle   0.0% io   0.0% irq   0.0%% sirq
+CPU3:   1.0% usr   1.0% sys   0.0% nic  98.0% idle   0.0% io   0.0% irq   0.0%% sirq
+
+=== CPU Hotspot (top threads by %CPU) ===============================================
+
+=== Interrupt / SoftIRQ Hotspot (Δ=1s) =============================================
+--- /proc/interrupts (Top 10 by delta, auto classify WIFI/ETH/OTHER) ---------------
+36:       1050 OTHER nss_queue0
+46:       1008 OTHER nss_queue0
+97:        383 OTHER ce2
+18:        330 OTHER arch_timer
+125:        258 OTHER ppdu-end-interrupts-mac1
+123:        161 OTHER ppdu-end-interrupts-mac3
+64:         74 WIFI pci0_wlan_ce_2
+96:         28 OTHER ce1
+33:         23 OTHER nss_empty_buf_sos
+70:         15 WIFI pci0_wlan_grp_dp_3
+
+--- /proc/softirqs (delta per class, sum all CPUs) ---------------------------------
+NET_RX           2521
+TASKLET           505
+RCU               340
+TIMER             318
+SCHED             313
+NET_TX              1
+BLOCK               0
+BLOCK_IOPOLL            0
+HI                  0
+HRTIMER             0
+
+=== Memory Utilization (/proc/meminfo) ==============================================
+----- cat /proc/meminfo -----
+MemTotal:         843132 kB
+MemFree:          391064 kB
+MemAvailable:     474996 kB
+Buffers:           16136 kB
+Cached:           106884 kB
+SwapCached:            0 kB
+Active:            80876 kB
+Inactive:          52772 kB
+Active(anon):      40876 kB
+Inactive(anon):      988 kB
+Active(file):      40000 kB
+Inactive(file):    51784 kB
+Unevictable:           0 kB
+Mlocked:               0 kB
+HighTotal:             0 kB
+HighFree:              0 kB
+LowTotal:         843132 kB
+LowFree:          391064 kB
+SwapTotal:             0 kB
+SwapFree:              0 kB
+Dirty:                 0 kB
+Writeback:             0 kB
+AnonPages:         10536 kB
+Mapped:            16500 kB
+Shmem:             31236 kB
+Slab:             164824 kB
+SReclaimable:       5800 kB
+SUnreclaim:       159024 kB
+KernelStack:        1592 kB
+PageTables:          724 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:      421564 kB
+Committed_AS:      71040 kB
+VmallocTotal:    1048576 kB
+VmallocUsed:           0 kB
+VmallocChunk:          0 kB
+
+=== Disk Utilization (df) ===========================================================
+----- df -----
+Filesystem           1024-blocks    Used Available Use% Mounted on
+/dev/shm/tmp/            98304      9680     88624  10% /mnt/tmpfs
+/dev/shm/tmpfw/          81920         0     81920   0% /mnt/tmpfw
+ubi20:storage            32644       384     30552   1% /storage
+/dev/mtdblock35          21248     21248         0 100% /apps
+/dev/mtdblock36           4608      4608         0 100% /lib/firmware/IPQ8074/WIFI_FW
+ubi24:syslog             32644        36     30896   0% /mnt/syslog
+ubi28:Reserved           51300       384     48268   1% /mnt/reserved
+ubi25:core_dump           9324        24      8764   0% /mnt/core_dump
+ubi27:Agent              45704      6704     36632  15% /mnt/data
+shmData                  20480     17152      3328  84% /mnt/usageInsight
+
+=== Interface Status ================================================================
+----- ethtool eth1 ----------------------------------------------------------
+Uplink Port Interface: eth1 | Speed: 100Mb/s | Duplex: Full | Port: MII | Auto-negotiation: on | Link detected: yes
+
+----- ifconfig (all interfaces) -----------------------------------------------------
+ath0      Link encap:Ethernet  HWaddr 02:00:00:00:00:01  
+          inet6 addr: fe80::ff:fe00:1/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:10000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+ath16     Link encap:Ethernet  HWaddr 02:00:00:00:00:02  
+          inet6 addr: fe80::ff:fe00:2/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:62418 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:623887 errors:36 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:10000 
+          RX bytes:14423954 (13.7 MiB)  TX bytes:854945729 (815.3 MiB)
+
+ath32     Link encap:Ethernet  HWaddr 02:00:00:00:00:03  
+          inet6 addr: fe80::ff:fe00:3/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:10000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+br-lan    Link encap:Ethernet  HWaddr 02:00:00:00:00:04  
+          inet addr:192.168.0.163  Bcast:192.168.0.255  Mask:255.255.255.0
+          inet6 addr: fe80::ff:fe00:4/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:1433236 errors:0 dropped:28 overruns:0 frame:0
+          TX packets:165968 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:143976372 (137.3 MiB)  TX bytes:33811128 (32.2 MiB)
+
+eth0      Link encap:Ethernet  HWaddr 02:00:00:00:00:05  
+          UP BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:10000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+          Base address:0x1800 
+
+eth1      Link encap:Ethernet  HWaddr 02:00:00:00:00:04  
+          inet6 addr: fe80::ff:fe00:4/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:2439401 errors:0 dropped:45122 overruns:0 frame:0
+          TX packets:290331 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:10000 
+          RX bytes:1070267058 (1020.6 MiB)  TX bytes:60856384 (58.0 MiB)
+          Base address:0x1a00 
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:1007345 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:1007345 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1 
+          RX bytes:204156359 (194.6 MiB)  TX bytes:204156359 (194.6 MiB)
+
+wifi0     Link encap:Ethernet  HWaddr 02:00:00:00:00:02  
+          inet6 addr: fe80::ff:fe00:2/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:62824 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:2024487 errors:36 dropped:36 overruns:0 carrier:0
+          collisions:0 txqueuelen:10000 
+          RX bytes:14465206 (13.7 MiB)  TX bytes:958039880 (913.6 MiB)
+
+wifi1     Link encap:Ethernet  HWaddr 02:00:00:00:00:01  
+          inet6 addr: fe80::ff:fe00:1/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:1453828 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:10000 
+          RX bytes:0 (0.0 B)  TX bytes:129808001 (123.7 MiB)
+
+wifi2     Link encap:Ethernet  HWaddr 02:00:00:00:00:06  
+          inet6 addr: fe80::ff:fe00:5/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:1453851 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:10000 
+          RX bytes:0 (0.0 B)  TX bytes:129809516 (123.7 MiB)
+
+
+=== Wi-Fi Status (iwconfig) =========================================================
+ath0      IEEE 802.11axg  ESSID:"!!3290-1"  
+          Mode:Master  Frequency:2.437 GHz (Channel 6)  Access Point: 02:00:00:00:00:01   
+          Bit Rate:573.5 Mb/s   Tx-Power:29 dBm   
+          RTS thr:off   Fragment thr:off
+          Encryption key:7D70-DA52-6ED6-19C1-F6D3-A1A3-F303-8205   Security mode:open
+          Power Management:off
+          Link Quality=0/94  Signal level=-93 dBm  Noise level=-93 dBm (BDF averaged NF value in dBm)
+          Rx invalid nwid:31043  Rx invalid crypt:0  Rx invalid frag:0
+          Tx excessive retries:0  Invalid misc:0   Missed beacon:0
+
+
+ath32     IEEE 802.11axa  ESSID:"!!3290-1"  
+          Mode:Master  Frequency:6.415 GHz (Channel 93)  Access Point: 02:00:00:00:00:03   
+          Bit Rate:2.4019 Gb/s   Tx-Power:9 dBm   
+          RTS thr:off   Fragment thr:off
+          Encryption key:17C6-D1C8-173B-4CDA-AD5D-C66F-63C8-F87D   Security mode:open
+          Power Management:off
+          Link Quality=0/94  Signal level=-95 dBm  Noise level=-95 dBm (BDF averaged NF value in dBm)
+          Rx invalid nwid:30927  Rx invalid crypt:0  Rx invalid frag:0
+          Tx excessive retries:0  Invalid misc:0   Missed beacon:0
+
+
+ath16     IEEE 802.11axa  ESSID:"!!3290-1"  
+          Mode:Master  Frequency:5.18 GHz (Channel 36)  Access Point: 02:00:00:00:00:02   
+          Bit Rate:1.1471 Gb/s   Tx-Power:23 dBm   
+          RTS thr:off   Fragment thr:off
+          Encryption key:81D0-6356-FFFD-660A-8E39-7991-175F-E3BC   Security mode:open
+          Power Management:off
+          Link Quality=0/94  Signal level=-91 dBm  Noise level=-91 dBm (BDF averaged NF value in dBm)
+          Rx invalid nwid:144200  Rx invalid crypt:0  Rx invalid frag:0
+          Tx excessive retries:0  Invalid misc:0   Missed beacon:0
+
+
+
+=== CURL Hooks ======================================================================
+{"data":{"model_name":"AP6 840E","product_name":"AP6840E-SN0000000000000","modelrev":"Rev.1","assembly_revision":"01","uptime":"6 days 18:12:06 ","system_time":"2026/06/09 03:46:52","firmware_version":"1.10.336","sophos_firmware_version":"1.10.3011","mac_address":"02:00:00:00:00:04","management_vlan_id":1,"ip_address":"192.168.0.163","default_gateway":"192.168.0.1","dns_server":"192.168.0.1,8.8.8.8","dhcp_server":"192.168.0.1","ipv6_address":"---","ipv6_link_local_address":"fe80::ff:fe00:4/64","sn_number":"SN0000000000000","workload":{"cpu_load":4,"mem_load":53,"tx_bytes":60856384,"rx_bytes":1070267309,"tx":"60.8 MBytes","rx":"1.0 GBytes","connected_clients":0},"power_statistics":{"type":"POE","pse_name":"","pse_description":"","requested_power":"40.0 W","available_power":"40.0 W","power_class":"802.3bt","expected_power_class":"802.3bt","insufficient_power":"No"}},"error_code":0,"error_msg":""}
+{"data":{"temperatures":{"cpu":{"core0":"53","core1":"53","core2":"53","core3":"52"},"radio":{"wifi0":"67","wifi1":"52","wifi2":"57"}},"ecc":{"mtd21":{"ecc_failed":0,"ecc_corrected":9,"number_of_bad_blocks":0},"mtd23":{"ecc_failed":0,"ecc_corrected":0,"number_of_bad_blocks":0}}},"error_code":0,"error_msg":""}
+{"data":{"radio_name":"Wireless 2.4G","status":"Enabled","mac_address":"02:00:00:00:00:01","channel":"Ch 6","channel_utilization":"95%","tx_power":"100%","rssi":"0"},"error_code":0,"error_msg":""}
+{"data":{"radio_name":"Wireless 5G","status":"Enabled","mac_address":"02:00:00:00:00:02","channel":"Ch 36 + 40 + 36 + 36","channel_utilization":"44%","tx_power":"100%","rssi":"-56"},"error_code":0,"error_msg":""}
+{"data":{"radio_name":"Wireless 6G","status":"Enabled","mac_address":"02:00:00:00:00:03","channel":"Ch 81 + 85 + 89 + 93","channel_utilization":"18%","tx_power":"100%","rssi":"-56"},"error_code":0,"error_msg":""}
+{"data":{"client_list":[],"total_size":0},"error_code":0,"error_msg":""}
+{"data":{"client_list":[],"total_size":0},"error_code":0,"error_msg":""}
+{"data":{"client_list":[],"total_size":0},"error_code":0,"error_msg":""}
+
+=== Process Status (VSZ != 0) =======================================================
+  PID USER       VSZ STAT COMMAND
+    1 0         1108 S    init
+  331 0          720 S    /sbin/console_term
+ 1231 0        13304 S    /sbin/sd
+ 1243 0         1192 S    edi_hplug
+ 1247 0         9984 S    /sbin/logd -d 1
+ 1249 0         1108 S    /sbin/syslogd -s 128 -b 1 -k 0 -t
+ 1263 0          772 S    /sbin/iwevent
+ 1405 0          740 S    /sbin/udhcpc -f -l -Z -i br-lan -s /etc/udhcpc/udhcp
+ 1412 0         1088 S    lldpd -M 4 -S Sophos AP6 840E
+ 2122 0          728 S    /sbin/qrtr-ns
+ 3311 0         4900 S    /sbin/hostapd3 -P /var/hostapd3.pid -B /etc/hostapd3
+ 3697 0         5720 S    /sbin/dropbear -l /sbin/console_term -p 127.0.0.1:33
+ 3718 0         8328 S    /sbin/taskmanager
+ 4110 0        14376 S    mongoose /www/mongoose.config -g /www/.htpasswd
+ 4114 0        15048 S    api_server /etc/api_server.conf -g /www/.htpasswd
+ 4572 0         4884 S    /sbin/hostapd1 -P /var/hostapd.pid -B /etc/hostapd1.
+ 5054 0         4988 S    /sbin/hostapd2 -P /var/hostapd2.pid -B /etc/hostapd2
+ 5192 0         1112 S    sh /tmp/ip6_auto_config
+ 5231 0         4136 S    /sbin/usg_insight_app
+ 6233 0         1124 S    {sophos_runner.s} /bin/sh /mnt/data/iss_config/curre
+ 6255 0         8880 S    {sophos-wifix-ag} /mnt/data/iss_config/current_confi
+ 7003 0         1132 S    /bin/sh
+19011 0         1136 S    sh /mnt/data/sysMon001.sh 60s 10m
+20144 0         1056 S    /sbin/dnsmasq -C /etc/dnsmasq.conf -k
+20929 0         1108 S    sleep 10
+20959 0         1108 S    sleep 15
+20985 0         1108 R    ps
+20986 0         1108 S    awk NR==1 || $3 != 0
+
+=== Process Details =================================================================
+Process: init            | PID: 1     | VmSize: 1108 kB    | VmRSS: 736 kB     | VmData: 20 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 588902   | nonvol_ctxt: 310     
+Process: sd              | PID: 1231  | VmSize: 13304 kB   | VmRSS: 8736 kB    | VmData: 2820 kB    | VmSwap: 0 kB     | Threads: 2    | CPU: 0-3  | vol_ctxt: 4626002  | nonvol_ctxt: 178289  
+Process: edi_hplug       | PID: 1243  | VmSize: 1192 kB    | VmRSS: 576 kB     | VmData: 120 kB     | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 273      | nonvol_ctxt: 3       
+Process: logd            | PID: 1247  | VmSize: 9984 kB    | VmRSS: 1148 kB    | VmData: 128 kB     | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 84604    | nonvol_ctxt: 18355   
+Process: syslogd         | PID: 1249  | VmSize: 1108 kB    | VmRSS: 32 kB      | VmData: 20 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 38939    | nonvol_ctxt: 1       
+Process: iwevent         | PID: 1263  | VmSize: 772 kB     | VmRSS: 460 kB     | VmData: 20 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 1751538  | nonvol_ctxt: 12      
+Process: udhcpc          | PID: 1405  | VmSize: 740 kB     | VmRSS: 428 kB     | VmData: 20 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 46090    | nonvol_ctxt: 2       
+Process: lldpd           | PID: 1412  | VmSize: 1088 kB    | VmRSS: 44 kB      | VmData: 76 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 1864115  | nonvol_ctxt: 13      
+Process: sh              | PID: 19011 | VmSize: 1140 kB    | VmRSS: 960 kB     | VmData: 52 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 383      | nonvol_ctxt: 3       
+Process: dnsmasq         | PID: 20144 | VmSize: 1056 kB    | VmRSS: 472 kB     | VmData: 48 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 1        | nonvol_ctxt: 1       
+Process: sleep           | PID: 20929 | VmSize: 1108 kB    | VmRSS: 472 kB     | VmData: 20 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 1        | nonvol_ctxt: 0       
+Process: sleep           | PID: 20959 | VmSize: 1108 kB    | VmRSS: 472 kB     | VmData: 20 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 1        | nonvol_ctxt: 1       
+Process: qrtr-ns         | PID: 2122  | VmSize: 728 kB     | VmRSS: 28 kB      | VmData: 20 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 6        | nonvol_ctxt: 0       
+Process: console_term    | PID: 331   | VmSize: 720 kB     | VmRSS: 408 kB     | VmData: 20 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 27       | nonvol_ctxt: 2       
+Process: hostapd3        | PID: 3311  | VmSize: 4900 kB    | VmRSS: 1860 kB    | VmData: 68 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 1808661  | nonvol_ctxt: 29      
+Process: dropbear        | PID: 3697  | VmSize: 5720 kB    | VmRSS: 108 kB     | VmData: 132 kB     | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 1        | nonvol_ctxt: 0       
+Process: taskmanager     | PID: 3718  | VmSize: 8328 kB    | VmRSS: 2620 kB    | VmData: 328 kB     | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 1139546  | nonvol_ctxt: 64472   
+Process: mongoose        | PID: 4110  | VmSize: 14376 kB   | VmRSS: 6204 kB    | VmData: 1948 kB    | VmSwap: 0 kB     | Threads: 12   | CPU: 0-3  | vol_ctxt: 583781   | nonvol_ctxt: 6       
+Process: api_server      | PID: 4114  | VmSize: 15048 kB   | VmRSS: 4900 kB    | VmData: 2640 kB    | VmSwap: 0 kB     | Threads: 12   | CPU: 0-3  | vol_ctxt: 583782   | nonvol_ctxt: 3       
+Process: hostapd1        | PID: 4572  | VmSize: 4884 kB    | VmRSS: 2072 kB    | VmData: 52 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 1812763  | nonvol_ctxt: 31      
+Process: hostapd2        | PID: 5054  | VmSize: 4988 kB    | VmRSS: 2036 kB    | VmData: 156 kB     | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 1805739  | nonvol_ctxt: 45      
+Process: sh              | PID: 5192  | VmSize: 1112 kB    | VmRSS: 864 kB     | VmData: 24 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 195729   | nonvol_ctxt: 17      
+Process: usg_insight_app | PID: 5231  | VmSize: 4136 kB    | VmRSS: 1668 kB    | VmData: 28 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 15826    | nonvol_ctxt: 2       
+Process: sophos_runner.s | PID: 6233  | VmSize: 1124 kB    | VmRSS: 944 kB     | VmData: 36 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 77776    | nonvol_ctxt: 12      
+Process: sophos-wifix-ag | PID: 6255  | VmSize: 8880 kB    | VmRSS: 7928 kB    | VmData: 2976 kB    | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 302389   | nonvol_ctxt: 24504   
+Process: sh              | PID: 7003  | VmSize: 1132 kB    | VmRSS: 472 kB     | VmData: 44 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 32       | nonvol_ctxt: 7       
+
+=== Wi-Fi Client List ===============================================================
+
+
+
+pwd
+=====================================================================================
+= Test Time: 3, 2026-06-09 03:48:03                                              =
+=====================================================================================
+=== CPU Utilization =================================================================
+CPU0:   6.1% usr   1.0% sys   0.0% nic  86.9% idle   0.0% io   0.0% irq   6.1%% sirq
+CPU1:   0.0% usr   2.0% sys   0.0% nic  97.0% idle   0.0% io   0.0% irq   1.0%% sirq
+CPU2:   0.0% usr   0.0% sys   0.0% nic  99.0% idle   0.0% io   0.0% irq   1.0%% sirq
+CPU3:   1.0% usr   2.0% sys   0.0% nic  97.0% idle   0.0% io   0.0% irq   0.0%% sirq
+
+=== CPU Hotspot (top threads by %CPU) ===============================================
+
+=== Interrupt / SoftIRQ Hotspot (Δ=1s) =============================================
+--- /proc/interrupts (Top 10 by delta, auto classify WIFI/ETH/OTHER) ---------------
+36:       1058 OTHER nss_queue0
+46:       1011 OTHER nss_queue0
+97:        385 OTHER ce2
+18:        320 OTHER arch_timer
+125:        297 OTHER ppdu-end-interrupts-mac1
+123:        174 OTHER ppdu-end-interrupts-mac3
+64:         79 WIFI pci0_wlan_ce_2
+96:         24 OTHER ce1
+33:         20 OTHER nss_empty_buf_sos
+70:         15 WIFI pci0_wlan_grp_dp_3
+
+--- /proc/softirqs (delta per class, sum all CPUs) ---------------------------------
+NET_RX           2607
+TASKLET           503
+TIMER             291
+SCHED             280
+RCU               267
+BLOCK               0
+BLOCK_IOPOLL            0
+HI                  0
+HRTIMER             0
+NET_TX              0
+
+=== Memory Utilization (/proc/meminfo) ==============================================
+----- cat /proc/meminfo -----
+MemTotal:         843132 kB
+MemFree:          390876 kB
+MemAvailable:     474808 kB
+Buffers:           16136 kB
+Cached:           106884 kB
+SwapCached:            0 kB
+Active:            80712 kB
+Inactive:          52772 kB
+Active(anon):      40712 kB
+Inactive(anon):      988 kB
+Active(file):      40000 kB
+Inactive(file):    51784 kB
+Unevictable:           0 kB
+Mlocked:               0 kB
+HighTotal:             0 kB
+HighFree:              0 kB
+LowTotal:         843132 kB
+LowFree:          390876 kB
+SwapTotal:             0 kB
+SwapFree:              0 kB
+Dirty:                 0 kB
+Writeback:             0 kB
+AnonPages:         10528 kB
+Mapped:            16500 kB
+Shmem:             31236 kB
+Slab:             164812 kB
+SReclaimable:       5800 kB
+SUnreclaim:       159012 kB
+KernelStack:        1600 kB
+PageTables:          728 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:      421564 kB
+Committed_AS:      69852 kB
+VmallocTotal:    1048576 kB
+VmallocUsed:           0 kB
+VmallocChunk:          0 kB
+
+=== Disk Utilization (df) ===========================================================
+----- df -----
+Filesystem           1024-blocks    Used Available Use% Mounted on
+/dev/shm/tmp/            98304      9680     88624  10% /mnt/tmpfs
+/dev/shm/tmpfw/          81920         0     81920   0% /mnt/tmpfw
+ubi20:storage            32644       384     30552   1% /storage
+/dev/mtdblock35          21248     21248         0 100% /apps
+/dev/mtdblock36           4608      4608         0 100% /lib/firmware/IPQ8074/WIFI_FW
+ubi24:syslog             32644        36     30896   0% /mnt/syslog
+ubi28:Reserved           51300       384     48268   1% /mnt/reserved
+ubi25:core_dump           9324        24      8764   0% /mnt/core_dump
+ubi27:Agent              45704      6704     36632  15% /mnt/data
+shmData                  20480     17152      3328  84% /mnt/usageInsight
+
+=== Interface Status ================================================================
+----- ethtool eth1 ----------------------------------------------------------
+Uplink Port Interface: eth1 | Speed: 100Mb/s | Duplex: Full | Port: MII | Auto-negotiation: on | Link detected: yes
+
+----- ifconfig (all interfaces) -----------------------------------------------------
+ath0      Link encap:Ethernet  HWaddr 02:00:00:00:00:01  
+          inet6 addr: fe80::ff:fe00:1/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:10000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+ath16     Link encap:Ethernet  HWaddr 02:00:00:00:00:02  
+          inet6 addr: fe80::ff:fe00:2/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:62418 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:623887 errors:36 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:10000 
+          RX bytes:14423954 (13.7 MiB)  TX bytes:854945729 (815.3 MiB)
+
+ath32     Link encap:Ethernet  HWaddr 02:00:00:00:00:03  
+          inet6 addr: fe80::ff:fe00:3/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:10000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+br-lan    Link encap:Ethernet  HWaddr 02:00:00:00:00:04  
+          inet addr:192.168.0.163  Bcast:192.168.0.255  Mask:255.255.255.0
+          inet6 addr: fe80::ff:fe00:4/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:1433432 errors:0 dropped:28 overruns:0 frame:0
+          TX packets:165975 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:143989366 (137.3 MiB)  TX bytes:33811598 (32.2 MiB)
+
+eth0      Link encap:Ethernet  HWaddr 02:00:00:00:00:05  
+          UP BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:10000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+          Base address:0x1800 
+
+eth1      Link encap:Ethernet  HWaddr 02:00:00:00:00:04  
+          inet6 addr: fe80::ff:fe00:4/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:2439648 errors:0 dropped:45129 overruns:0 frame:0
+          TX packets:290346 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:10000 
+          RX bytes:1070290975 (1020.7 MiB)  TX bytes:60858426 (58.0 MiB)
+          Base address:0x1a00 
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:1007580 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:1007580 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1 
+          RX bytes:204205352 (194.7 MiB)  TX bytes:204205352 (194.7 MiB)
+
+wifi0     Link encap:Ethernet  HWaddr 02:00:00:00:00:02  
+          inet6 addr: fe80::ff:fe00:2/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:62824 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:2024695 errors:36 dropped:36 overruns:0 carrier:0
+          collisions:0 txqueuelen:10000 
+          RX bytes:14465206 (13.7 MiB)  TX bytes:958056318 (913.6 MiB)
+
+wifi1     Link encap:Ethernet  HWaddr 02:00:00:00:00:01  
+          inet6 addr: fe80::ff:fe00:1/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:1454036 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:10000 
+          RX bytes:0 (0.0 B)  TX bytes:129824439 (123.8 MiB)
+
+wifi2     Link encap:Ethernet  HWaddr 02:00:00:00:00:06  
+          inet6 addr: fe80::ff:fe00:5/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:1454059 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:10000 
+          RX bytes:0 (0.0 B)  TX bytes:129825954 (123.8 MiB)
+
+
+=== Wi-Fi Status (iwconfig) =========================================================
+ath0      IEEE 802.11axg  ESSID:"!!3290-1"  
+          Mode:Master  Frequency:2.437 GHz (Channel 6)  Access Point: 02:00:00:00:00:01   
+          Bit Rate:573.5 Mb/s   Tx-Power:29 dBm   
+          RTS thr:off   Fragment thr:off
+          Encryption key:7D70-DA52-6ED6-19C1-F6D3-A1A3-F303-8205   Security mode:open
+          Power Management:off
+          Link Quality=0/94  Signal level=-93 dBm  Noise level=-93 dBm (BDF averaged NF value in dBm)
+          Rx invalid nwid:31043  Rx invalid crypt:0  Rx invalid frag:0
+          Tx excessive retries:0  Invalid misc:0   Missed beacon:0
+
+
+ath32     IEEE 802.11axa  ESSID:"!!3290-1"  
+          Mode:Master  Frequency:6.415 GHz (Channel 93)  Access Point: 02:00:00:00:00:03   
+          Bit Rate:2.4019 Gb/s   Tx-Power:9 dBm   
+          RTS thr:off   Fragment thr:off
+          Encryption key:17C6-D1C8-173B-4CDA-AD5D-C66F-63C8-F87D   Security mode:open
+          Power Management:off
+          Link Quality=0/94  Signal level=-95 dBm  Noise level=-95 dBm (BDF averaged NF value in dBm)
+          Rx invalid nwid:30931  Rx invalid crypt:0  Rx invalid frag:0
+          Tx excessive retries:0  Invalid misc:0   Missed beacon:0
+
+
+ath16     IEEE 802.11axa  ESSID:"!!3290-1"  
+          Mode:Master  Frequency:5.18 GHz (Channel 36)  Access Point: 02:00:00:00:00:02   
+          Bit Rate:1.1471 Gb/s   Tx-Power:23 dBm   
+          RTS thr:off   Fragment thr:off
+          Encryption key:81D0-6356-FFFD-660A-8E39-7991-175F-E3BC   Security mode:open
+          Power Management:off
+          Link Quality=0/94  Signal level=-91 dBm  Noise level=-91 dBm (BDF averaged NF value in dBm)
+          Rx invalid nwid:144220  Rx invalid crypt:0  Rx invalid frag:0
+          Tx excessive retries:0  Invalid misc:0   Missed beacon:0
+
+
+
+=== CURL Hooks ======================================================================
+{"data":{"model_name":"AP6 840E","product_name":"AP6840E-SN0000000000000","modelrev":"Rev.1","assembly_revision":"01","uptime":"6 days 18:13:21 ","system_time":"2026/06/09 03:48:07","firmware_version":"1.10.336","sophos_firmware_version":"1.10.3011","mac_address":"02:00:00:00:00:04","management_vlan_id":1,"ip_address":"192.168.0.163","default_gateway":"192.168.0.1","dns_server":"192.168.0.1,8.8.8.8","dhcp_server":"192.168.0.1","ipv6_address":"---","ipv6_link_local_address":"fe80::ff:fe00:4/64","sn_number":"SN0000000000000","workload":{"cpu_load":5,"mem_load":53,"tx_bytes":60858492,"rx_bytes":1070293947,"tx":"60.8 MBytes","rx":"1.0 GBytes","connected_clients":0},"power_statistics":{"type":"POE","pse_name":"","pse_description":"","requested_power":"40.0 W","available_power":"40.0 W","power_class":"802.3bt","expected_power_class":"802.3bt","insufficient_power":"No"}},"error_code":0,"error_msg":""}
+{"data":{"temperatures":{"cpu":{"core0":"53","core1":"53","core2":"53","core3":"52"},"radio":{"wifi0":"67","wifi1":"54","wifi2":"57"}},"ecc":{"mtd21":{"ecc_failed":0,"ecc_corrected":9,"number_of_bad_blocks":0},"mtd23":{"ecc_failed":0,"ecc_corrected":0,"number_of_bad_blocks":0}}},"error_code":0,"error_msg":""}
+{"data":{"radio_name":"Wireless 2.4G","status":"Enabled","mac_address":"02:00:00:00:00:01","channel":"Ch 6","channel_utilization":"94%","tx_power":"100%","rssi":"0"},"error_code":0,"error_msg":""}
+{"data":{"radio_name":"Wireless 5G","status":"Enabled","mac_address":"02:00:00:00:00:02","channel":"Ch 36 + 40 + 36 + 36","channel_utilization":"43%","tx_power":"100%","rssi":"-56"},"error_code":0,"error_msg":""}
+{"data":{"radio_name":"Wireless 6G","status":"Enabled","mac_address":"02:00:00:00:00:03","channel":"Ch 81 + 85 + 89 + 93","channel_utilization":"12%","tx_power":"100%","rssi":"-56"},"error_code":0,"error_msg":""}
+{"data":{"client_list":[],"total_size":0},"error_code":0,"error_msg":""}
+{"data":{"client_list":[],"total_size":0},"error_code":0,"error_msg":""}
+{"data":{"client_list":[],"total_size":0},"error_code":0,"error_msg":""}
+
+=== Process Status (VSZ != 0) =======================================================
+  PID USER       VSZ STAT COMMAND
+    1 0         1108 S    init
+  331 0          720 S    /sbin/console_term
+ 1231 0        13304 S    /sbin/sd
+ 1243 0         1192 S    edi_hplug
+ 1247 0         9984 S    /sbin/logd -d 1
+ 1249 0         1108 S    /sbin/syslogd -s 128 -b 1 -k 0 -t
+ 1263 0          772 S    /sbin/iwevent
+ 1405 0          740 S    /sbin/udhcpc -f -l -Z -i br-lan -s /etc/udhcpc/udhcp
+ 1412 0         1088 S    lldpd -M 4 -S Sophos AP6 840E
+ 2122 0          728 S    /sbin/qrtr-ns
+ 3311 0         4900 S    /sbin/hostapd3 -P /var/hostapd3.pid -B /etc/hostapd3
+ 3697 0         5720 S    /sbin/dropbear -l /sbin/console_term -p 127.0.0.1:33
+ 3718 0         8328 S    /sbin/taskmanager
+ 4110 0        14376 S    mongoose /www/mongoose.config -g /www/.htpasswd
+ 4114 0        15048 S    api_server /etc/api_server.conf -g /www/.htpasswd
+ 4572 0         4884 S    /sbin/hostapd1 -P /var/hostapd.pid -B /etc/hostapd1.
+ 5054 0         4988 S    /sbin/hostapd2 -P /var/hostapd2.pid -B /etc/hostapd2
+ 5192 0         1112 S    sh /tmp/ip6_auto_config
+ 5231 0         4136 S    /sbin/usg_insight_app
+ 6233 0         1124 S    {sophos_runner.s} /bin/sh /mnt/data/iss_config/curre
+ 6255 0         8880 S    {sophos-wifix-ag} /mnt/data/iss_config/current_confi
+ 7003 0         1132 S    /bin/sh
+19011 0         1140 S    sh /mnt/data/sysMon001.sh 60s 10m
+20144 0         1056 S    /sbin/dnsmasq -C /etc/dnsmasq.conf -k
+22386 0         1108 S    sleep 10
+22533 0         1108 S    sleep 15
+22552 0         1108 R    ps
+22553 0         1108 S    awk NR==1 || $3 != 0
+
+=== Process Details =================================================================
+Process: init            | PID: 1     | VmSize: 1108 kB    | VmRSS: 736 kB     | VmData: 20 kB      | VmSwap: 0 kB     | Threads: 1    | CPU: 0-3  | vol_ctxt: 588977   | nonvol_ctxt: 310     
+Process: sd              | PID: 1231  | VmSize: 13304 kB   | VmRSS: 8736 kB    | VmData: 2820 kB    | VmSwap: 0 kB     | Threads: 2    | CPU: 0-3  | vol_ctxt: 4626544  | nonvol_ctxt: 178301  
+Process: edi_hplug       | PID: 1243  | VmSize: 1192 kB    | Vm^C
+AP6_840E# 
+[584112.725894] 
+[584112.732186] 
+[584112.773987] 
+[584112.785944] 
+[584112.789233] 
+[584112.797009] 
+ath8      no frequency information.
+
+[584352.732259] 
+[584352.738127] 
+[584352.781883] 
+[584352.792649] 
+[584352.795534] 
+[584352.803760] 

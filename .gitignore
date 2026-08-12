@@ -4,5 +4,9 @@ __pycache__/
 node_modules/
 logs/
 *.log
+# Parser fixtures are committed on purpose (SPEC §6: "parser fixtures from real
+# DUT logs"). They are captures, not runtime output, and are scrubbed of device
+# identifiers before landing here.
+!backend/tests/fixtures/*.log
 .DS_Store
 .env
