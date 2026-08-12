@@ -1,9 +1,10 @@
-"""pi4_AP node — FastAPI application (M2: console + handoff/rotation/bridge).
+"""pi4_AP node — FastAPI application (M3: console + handoff + parser/monitoring).
 
 Single process, single port :8080 (SPEC §2 / decision D1). The pipeline is:
 
     SerialWorker (thread) -> raw log (always on, P0)
-                          -> ConsoleBatcher -> ConsoleRing -> WebSocketManager
+                          -> ConsoleBatcher -> ConsoleRing ----> WebSocketManager
+                          -> SysMonParser   -> SnapshotStore --/
 
 Structure ported from DUT_browser's ``app/main.py``, cut to one DUT (SPEC §4:
 one node = one serial port = one DUT), so the ``DutRegistry`` indirection is
@@ -27,10 +28,12 @@ from app.config import (
     TCP_BRIDGE_HOST,
     TCP_BRIDGE_PORT,
 )
+from app.parser.sysmon_parser import SysMonParser
 from app.serial.serial_worker import SerialWorker
 from app.serial.tcp_bridge import TcpSerialBridge
 from app.services.console_batcher import ConsoleBatcher
 from app.services.console_ring import ConsoleRing
+from app.services.snapshot_store import SnapshotStore
 from app.websocket.ws_manager import WebSocketManager
 
 
@@ -42,14 +45,37 @@ async def lifespan(app: FastAPI):
     ws_manager.bind_loop(loop)
     console_ring = ConsoleRing()
 
+    snapshot_store = SnapshotStore()
+
     def on_event(event: dict) -> None:
-        # Runs on the SerialWorker (or batch-timer) thread. Ring first so a
-        # client connecting mid-flight still finds the batch in its replay.
+        # Runs on the SerialWorker (or batch-timer) thread. Stores first so a
+        # client connecting mid-flight still finds the data in its backfill.
         console_ring.observe(event)
+        snapshot_store.observe(event)
         ws_manager.emit_from_thread(event)
 
     batcher = ConsoleBatcher(on_event=on_event)
-    serial_worker = SerialWorker(on_line=batcher.feed)
+    parser = SysMonParser(on_event=on_event)
+
+    def dispatch_line(line: str) -> None:
+        """Fan one console line out to the console stream and the parser.
+
+        Each consumer is isolated. SerialWorker already guards the whole
+        dispatch, but that guard aborts the rest of the chunk: a parser blowing
+        up on line 3 of 10 would silently drop lines 4-10 from the console. The
+        console is fed first and independently, so the parser can never cost it
+        a line — the same P0 ordering the raw log gets, one level down.
+        """
+        try:
+            batcher.feed(line)
+        except Exception:
+            pass
+        try:
+            parser.feed(line)
+        except Exception:
+            pass
+
+    serial_worker = SerialWorker(on_line=dispatch_line)
     tcp_bridge = TcpSerialBridge(serial_worker.write_raw, TCP_BRIDGE_HOST, TCP_BRIDGE_PORT)
     serial_worker.set_raw_callback(tcp_bridge.publish)
     if TCP_BRIDGE_ENABLED:
@@ -65,6 +91,8 @@ async def lifespan(app: FastAPI):
     app.state.console_batcher = batcher
     app.state.serial_worker = serial_worker
     app.state.tcp_bridge = tcp_bridge
+    app.state.parser = parser
+    app.state.snapshot_store = snapshot_store
 
     try:
         yield
@@ -73,6 +101,7 @@ async def lifespan(app: FastAPI):
         tcp_bridge.close()
         batcher.flush()
         batcher.reset()
+        parser.flush()
         await ws_manager.close()
 
 
@@ -82,7 +111,25 @@ app.include_router(serial_router)
 
 @app.get("/health")
 def health() -> dict:
-    return {"ok": True, "milestone": "M2"}
+    return {"ok": True, "milestone": "M3"}
+
+
+@app.get("/api/snapshots")
+def get_snapshots(limit: int = 240) -> dict:
+    """Accumulated snapshot history, so charts populate instantly on page load
+    instead of waiting for the DUT's next Test Time (~70 s on real hardware)."""
+    limit = max(1, min(limit, 1000))
+    return {"snapshots": app.state.snapshot_store.recent(limit)}
+
+
+@app.get("/api/dut")
+def get_dut_identity() -> dict:
+    """Latest parsed DUT identity (model / firmware / uptime) for Overview."""
+    return {
+        "identity": app.state.parser.identity,
+        "snapshot": app.state.snapshot_store.latest(),
+        "parser": app.state.parser.efficiency_report(),
+    }
 
 
 @app.get("/api/console/efficiency")

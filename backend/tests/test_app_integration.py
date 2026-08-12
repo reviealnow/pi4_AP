@@ -53,7 +53,7 @@ def wait_for(predicate, timeout: float = 5.0):
 
 
 def test_health_and_port_listing(client):
-    assert client.get("/health").json() == {"ok": True, "milestone": "M2"}
+    assert client.get("/health").json() == {"ok": True, "milestone": "M3"}
     assert isinstance(client.get("/api/serial/ports").json()["ports"], list)
 
 
