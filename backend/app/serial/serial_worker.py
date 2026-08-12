@@ -82,7 +82,6 @@ class SerialWorker:
         self._segment_bytes = 0
         self._segment_index = 1
         self._session_token = ""
-        self._prune_threshold_bytes = self._log_total_bytes
 
     # ------------------------------------------------------------------ state
 
@@ -380,8 +379,6 @@ class SerialWorker:
                 self._bytes_written += written
                 self._segment_bytes += written
                 remaining = remaining[written:]
-                if self._segment_bytes > self._prune_threshold_bytes:
-                    self._prune_logs_locked()
             self._last_rx_monotonic = time.monotonic()
         self._maybe_force_sync()
 
@@ -425,12 +422,6 @@ class SerialWorker:
                 size = path.stat().st_size
                 path.unlink()
                 total -= size
-            closed_total = sum(
-                path.stat().st_size
-                for path in LOG_DIR.glob("dut-*.log")
-                if path.is_file() and (current is None or path != current)
-            )
-            self._prune_threshold_bytes = max(0, self._log_total_bytes - closed_total)
         except OSError:
             # Rotation cleanup must never interrupt P0 logging. A later write or
             # rotation retries pruning; disk-full still fails loudly on write.
@@ -444,3 +435,4 @@ class SerialWorker:
                 finally:
                     self._log_fp.close()
                     self._log_fp = None
+                self._prune_logs_locked()

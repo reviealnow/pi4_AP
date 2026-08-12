@@ -3,6 +3,8 @@ from __future__ import annotations
 import socket
 import time
 
+import pytest
+
 from app.serial.tcp_bridge import TcpSerialBridge
 
 
@@ -47,3 +49,20 @@ def test_slow_tcp_client_never_blocks_raw_publish():
             assert bridge.status()["dropped_output_chunks"] > 0
     finally:
         bridge.close()
+
+
+def test_start_on_occupied_port_stays_disabled_and_records_error():
+    occupied = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    occupied.bind(("127.0.0.1", 0))
+    occupied.listen(1)
+    bridge = TcpSerialBridge(lambda _data: None, "127.0.0.1", occupied.getsockname()[1])
+    try:
+        with pytest.raises(OSError):
+            bridge.start()
+        bridge.disable_with_error(OSError(48, "Address already in use"))
+        status = bridge.status()
+        assert status["enabled"] is False
+        assert status["last_error"] == "bridge start failed: [Errno 48] Address already in use"
+    finally:
+        bridge.close()
+        occupied.close()

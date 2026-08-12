@@ -9,12 +9,14 @@ from __future__ import annotations
 
 import os
 import select
+import socket
 import time
 
 import pytest
 import serial
 from fastapi.testclient import TestClient
 
+from app import main as main_module
 from app.api import serial_api as serial_api_module
 from app.main import app
 from app.serial import serial_worker as serial_worker_module
@@ -53,6 +55,26 @@ def wait_for(predicate, timeout: float = 5.0):
 def test_health_and_port_listing(client):
     assert client.get("/health").json() == {"ok": True, "milestone": "M2"}
     assert isinstance(client.get("/api/serial/ports").json()["ports"], list)
+
+
+def test_occupied_bridge_port_does_not_abort_node_startup(tmp_path, monkeypatch):
+    occupied = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    occupied.bind(("127.0.0.1", 0))
+    occupied.listen(1)
+    log_dir = tmp_path / "logs"
+    monkeypatch.setattr(serial_worker_module, "LOG_DIR", log_dir)
+    monkeypatch.setattr(serial_api_module, "LOG_DIR", log_dir)
+    monkeypatch.setattr(main_module, "TCP_BRIDGE_ENABLED", True)
+    monkeypatch.setattr(main_module, "TCP_BRIDGE_HOST", "127.0.0.1")
+    monkeypatch.setattr(main_module, "TCP_BRIDGE_PORT", occupied.getsockname()[1])
+    try:
+        with TestClient(app) as test_client:
+            assert test_client.get("/health").json()["ok"] is True
+            bridge = test_client.get("/api/serial/status").json()["bridge"]
+            assert bridge["enabled"] is False
+            assert "Address already in use" in bridge["last_error"]
+    finally:
+        occupied.close()
 
 
 def test_open_requires_a_port(client):

@@ -375,3 +375,24 @@ def test_rotation_caps_total_disk_and_preserves_retained_tail(fake_serial, log_d
     assert total <= 25
     assert retained == payload[-total:]
     assert len(paths) == 3
+
+
+def test_pruning_does_not_run_on_each_raw_write(fake_serial, log_dir, monkeypatch):
+    fake_serial([])
+    worker = SerialWorker(log_segment_bytes=1024, log_total_bytes=4096)
+    worker.open(port="/dev/fake", baudrate=115200)
+    prune_calls = 0
+    original_prune = worker._prune_logs_locked
+
+    def count_prune() -> None:
+        nonlocal prune_calls
+        prune_calls += 1
+        original_prune()
+
+    monkeypatch.setattr(worker, "_prune_logs_locked", count_prune)
+    for _ in range(128):
+        worker._write_log_raw(b"x")
+
+    assert prune_calls == 0
+    worker.close()
+    assert prune_calls == 1

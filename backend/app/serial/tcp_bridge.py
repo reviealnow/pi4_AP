@@ -44,13 +44,22 @@ class TcpSerialBridge:
             return
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        server.bind((self._host, self._port))
+        try:
+            server.bind((self._host, self._port))
+        except OSError:
+            server.close()
+            raise
         server.listen(4)
         server.settimeout(0.5)
         self._server = server
         self._stop.clear()
         self._thread = threading.Thread(target=self._accept_loop, name="serial-tcp-bridge", daemon=True)
         self._thread.start()
+
+    def disable_with_error(self, exc: OSError) -> None:
+        """Record a startup failure without making the optional bridge fatal."""
+        with self._lock:
+            self._last_error = f"bridge start failed: {exc}"
 
     def close(self) -> None:
         self._stop.set()

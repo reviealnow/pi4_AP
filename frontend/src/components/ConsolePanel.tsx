@@ -10,6 +10,7 @@ import {
   SerialStatus,
 } from "../api/rest";
 import { formatBytes } from "../format";
+import { ConsoleLine } from "../monitoring/useDutMonitor";
 import { Card } from "./shell/Card";
 
 /**
@@ -21,7 +22,7 @@ import { Card } from "./shell/Card";
  */
 
 type Props = {
-  lines: string[];
+  lines: ConsoleLine[];
   serial: SerialStatus | null;
   onClear: () => void;
 };
@@ -34,18 +35,10 @@ export default function ConsolePanel({ lines, serial, onClear }: Props) {
   const [command, setCommand] = useState("");
   const [sendError, setSendError] = useState<string | null>(null);
   const [logs, setLogs] = useState<LogInfo[]>([]);
-  const lineTimes = useRef<string[]>([]);
-
-  while (lineTimes.current.length < lines.length) {
-    lineTimes.current.push(new Date().toLocaleTimeString());
-  }
-  if (lineTimes.current.length > lines.length) {
-    lineTimes.current = lines.length === 0 ? [] : lineTimes.current.slice(-lines.length);
-  }
   const visibleLines = useMemo(() => {
     const needle = search.trim().toLowerCase();
     return lines
-      .map((line, index) => ({ line, time: lineTimes.current[index] ?? "" }))
+      .map(({ text: line, timestamp }) => ({ line, time: new Date(timestamp).toLocaleTimeString() }))
       .filter(({ line }) => !needle || line.toLowerCase().includes(needle));
   }, [lines, search]);
   const text = useMemo(
@@ -130,7 +123,7 @@ export default function ConsolePanel({ lines, serial, onClear }: Props) {
               }
             }}
           >
-            Download raw log
+            Download current log
           </a>
           <button type="button" className="btn" onClick={() => setTimestamps((value) => !value)}>
             {timestamps ? "Hide timestamps" : "Show timestamps"}

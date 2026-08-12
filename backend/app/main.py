@@ -53,7 +53,12 @@ async def lifespan(app: FastAPI):
     tcp_bridge = TcpSerialBridge(serial_worker.write_raw, TCP_BRIDGE_HOST, TCP_BRIDGE_PORT)
     serial_worker.set_raw_callback(tcp_bridge.publish)
     if TCP_BRIDGE_ENABLED:
-        tcp_bridge.start()
+        try:
+            tcp_bridge.start()
+        except OSError as exc:
+            # The bridge is optional. A stale ser2net or another listener must
+            # not prevent the node (and therefore P0 raw logging) from booting.
+            tcp_bridge.disable_with_error(exc)
 
     app.state.ws_manager = ws_manager
     app.state.console_ring = console_ring
