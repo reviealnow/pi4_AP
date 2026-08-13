@@ -10,6 +10,7 @@ from __future__ import annotations
 import os
 import select
 import socket
+import threading
 import time
 
 import pytest
@@ -53,7 +54,7 @@ def wait_for(predicate, timeout: float = 5.0):
 
 
 def test_health_and_port_listing(client):
-    assert client.get("/health").json() == {"ok": True, "milestone": "M3"}
+    assert client.get("/health").json() == {"ok": True, "milestone": "M4"}
     assert isinstance(client.get("/api/serial/ports").json()["ports"], list)
 
 
@@ -129,6 +130,63 @@ def test_capture_stream_replay_and_download(client, pty_pair):
     assert client.get(f"/api/serial/logs/{log_name}").content == payload
 
     assert client.post("/api/serial/close").json()["connected"] is False
+
+
+def test_site_survey_capture_keeps_raw_log_and_console(client, pty_pair):
+    master_fd, slave_name = pty_pair
+    opened = client.post("/api/serial/open", json={"port": slave_name, "baudrate": 115200}).json()
+    response_bytes = (
+        b"Cell 01 - Address: 02:11:22:33:44:55\n"
+        b" Channel:6\n Quality=60/70 Signal level=-49 dBm\n ESSID:\"Lab\"\n"
+    )
+
+    def dut_shell():
+        command = os.read(master_fd, 4096).decode()
+        sentinel = command.split("echo ", 1)[1].strip()
+        os.write(master_fd, response_bytes + sentinel.encode() + b"\n")
+
+    thread = threading.Thread(target=dut_shell)
+    thread.start()
+    surveyed = client.post("/api/wifi/survey")
+    thread.join(timeout=2)
+    assert surveyed.status_code == 200, surveyed.text
+    assert surveyed.json()["results"][0]["ssid"] == "Lab"
+    assert wait_for(lambda: client.get("/api/console/efficiency").json()["ring_lines"] >= 5)
+    downloaded = client.get(f"/api/serial/logs/{opened['log_name']}").content
+    assert downloaded == response_bytes + downloaded[-len(downloaded.splitlines()[-1]) - 1 :]
+    assert response_bytes in downloaded
+    client.post("/api/serial/close")
+
+
+def test_survey_fails_immediately_when_port_is_released(client, pty_pair):
+    _master_fd, slave_name = pty_pair
+    client.post("/api/serial/open", json={"port": slave_name, "baudrate": 115200})
+    client.post("/api/serial/release")
+    response = client.post("/api/wifi/survey")
+    assert response.status_code == 409
+    assert response.json()["detail"] == "Port released to external terminal"
+
+
+def test_client_detail_refresh_runs_configured_serial_commands(client, monkeypatch):
+    worker = client.app.state.serial_worker
+    outputs = iter([
+        'ath16     IEEE 802.11axa  ESSID:"Lab-5"\n          Mode:Master',
+        "02:11:22:33:44:55 1 36 866M 780M -48 00:12:03 IEEE80211_MODE_11AXA_HE80 2 2",
+        "Average Tx Rate (kbps) = 900000\nAverage Rx Rate (kbps) = 700000",
+    ])
+    commands: list[str] = []
+
+    def capture(command: str, timeout: float) -> str:
+        commands.append(command)
+        return next(outputs)
+
+    monkeypatch.setattr(worker, "capture_command", capture)
+    response = client.post("/api/wifi/clients/refresh")
+    assert response.status_code == 200, response.text
+    row = response.json()["clients"][0]
+    assert (row["tx_rate"], row["rx_rate"], row["ssid"]) == ("900.0M", "700.0M", "Lab-5")
+    assert commands == ["iwconfig", "wlanconfig ath16 list", "apstats -s -m 02:11:22:33:44:55"]
+    assert client.get("/api/wifi/clients").json()["timestamp"] is not None
 
 
 def test_live_lines_reach_a_connected_client(client, pty_pair):

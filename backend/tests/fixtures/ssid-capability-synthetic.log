@@ -1,0 +1,2 @@
+--- SSID CAPABILITY ---
+[{"iface":"ath0","ssid":"Lab-24","bssid":"02:11:22:33:44:55","band":"2.4GHz","channel":1,"channel_width":"20 MHz","security":"WPA2-Personal","phy_mode":"11ax","mlo":null},{"iface":"ath32","ssid":"Lab-6","bssid":"06:aa:bb:cc:dd:ee","band":"6GHz","channel":37,"channel_width":"160 MHz","security":"WPA3-Personal","phy_mode":"11be","mlo":true}]

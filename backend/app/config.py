@@ -10,6 +10,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 LOG_DIR = Path(os.getenv("PI4AP_LOG_DIR", str(BASE_DIR / "logs")))
+COMMANDS_PATH = Path(os.getenv("PI4AP_COMMANDS_PATH", str(BASE_DIR / "config" / "dut_commands.yaml")))
 
 # Production build of the frontend (npm run build, committed per SPEC D3).
 # Served by the backend at "/" only when it exists; in dev it may be absent and

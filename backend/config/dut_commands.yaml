@@ -1,0 +1,5 @@
+ssid_capability: "echo '--- SSID CAPABILITY ---'; wifi_capabilities --json"
+site_survey: "iwlist scan"
+wifi_interfaces: "iwconfig"
+wifi_client_list: "wlanconfig {iface} list"
+wifi_client_stats: "apstats -s -m {mac}"

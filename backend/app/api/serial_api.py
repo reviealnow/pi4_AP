@@ -69,6 +69,7 @@ def open_serial(body: SerialOpenRequest, request: Request) -> dict:
     # identity must not linger in the charts or on Overview.
     request.app.state.parser.reset()
     request.app.state.snapshot_store.clear()
+    request.app.state.wifi_client_scan = {"timestamp": None, "clients": []}
 
     try:
         worker.open(port=body.port, baudrate=body.baudrate)

@@ -82,6 +82,14 @@ class SerialWorker:
         self._segment_bytes = 0
         self._segment_index = 1
         self._session_token = ""
+        # Ported from DUT_browser: synchronous command captures share the one
+        # serial channel. Captured lines are copied, not swallowed: normal line
+        # dispatch still feeds the console and parser after the P0 raw write.
+        self._capture_gate = threading.Lock()
+        self._capture_active = False
+        self._capture_lines: list[str] = []
+        self._capture_sentinel = ""
+        self._capture_done = threading.Event()
 
     # ------------------------------------------------------------------ state
 
@@ -228,6 +236,49 @@ class SerialWorker:
                     raise OSError(errno.EIO, "serial write made no progress")
                 remaining = remaining[written:]
 
+    def capture_command(self, cmd: str, timeout: float = 10.0) -> str:
+        """Run one DUT command and return output through an echo sentinel.
+
+        Captures queue because the tty is a single channel. Port state is
+        checked before queueing so a released-port request fails immediately.
+        """
+        with self._lock:
+            if self._released:
+                raise RuntimeError("Port released to external terminal")
+            if self._serial is None or not self._serial.is_open:
+                raise RuntimeError("Serial port is not open")
+        if not self._capture_gate.acquire(timeout=max(timeout + 4.0, 90.0)):
+            raise RuntimeError("Serial capture is busy; try again")
+        sentinel = f"__PI4AP_CAPTURE_{time.monotonic_ns()}__"
+        try:
+            with self._lock:
+                if self._released:
+                    raise RuntimeError("Port released to external terminal")
+                if self._serial is None or not self._serial.is_open:
+                    raise RuntimeError("Serial port is not open")
+                self._capture_lines = []
+                self._capture_sentinel = sentinel
+                self._capture_done.clear()
+                self._capture_active = True
+            try:
+                self.write_raw(f"{cmd}; echo {sentinel}\n".encode())
+                self._capture_done.wait(timeout=timeout)
+                with self._lock:
+                    lines = list(self._capture_lines)
+                if not any(sentinel in line for line in lines):
+                    raise TimeoutError(f"DUT command timed out after {timeout:g}s")
+            finally:
+                with self._lock:
+                    self._capture_active = False
+                    self._capture_sentinel = ""
+                    self._capture_lines = []
+            return "\n".join(
+                line for line in lines
+                if sentinel not in line and line.strip() != cmd
+            )
+        finally:
+            self._capture_gate.release()
+
     # ------------------------------------------------------------ reader loop
 
     def _read_loop(self) -> None:
@@ -282,8 +333,6 @@ class SerialWorker:
 
     def _dispatch_lines(self, data: bytes) -> None:
         """Assemble complete lines out of the byte stream and hand them upward."""
-        if self._on_line is None:
-            return
         buffer = self._pending + data
         parts = buffer.split(b"\n")
         pending = parts.pop()
@@ -300,7 +349,13 @@ class SerialWorker:
         self._pending = pending
 
         for line in lines:
-            self._on_line(line)
+            with self._lock:
+                if self._capture_active:
+                    self._capture_lines.append(line)
+                    if self._capture_sentinel and self._capture_sentinel in line:
+                        self._capture_done.set()
+            if self._on_line is not None:
+                self._on_line(line)
 
     def _console_text(self, raw: bytes, *, truncated: bool = False) -> str:
         if len(raw) > self._MAX_CONSOLE_LINE_BYTES:

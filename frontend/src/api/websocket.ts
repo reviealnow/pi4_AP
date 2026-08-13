@@ -24,9 +24,25 @@ export type CpuCore = {
 export type WifiClient = {
   mac?: string;
   ip?: string;
+  hostname?: string | null;
+  host_name?: string;
+  band?: string;
+  bss?: string | null;
+  iface?: string;
   rssi?: number;
   snr?: number;
+  tx_rate?: string | number | null;
+  rx_rate?: string | number | null;
+  txrate?: string | number;
+  rxrate?: string | number;
+  airtime?: string | number | null;
   [key: string]: unknown;
+};
+
+export type SsidCapability = {
+  iface?: string; ssid?: string; bssid?: string; band?: string;
+  channel?: number; channel_width?: string; security?: string;
+  generation?: string; phy_mode?: string; mlo?: boolean | string | null;
 };
 
 /** Selected /proc/meminfo keys (kB), streamed live inside each snapshot. */
@@ -70,6 +86,7 @@ export type NodeEvent =
   | { type: "snapshot_update"; snapshot: SnapshotPayload }
   | { type: "snapshot_delta"; delta: SnapshotDelta }
   | { type: "dut_identity"; identity: DutIdentity }
+  | { type: "ssid_capability_update"; capabilities: SsidCapability[] }
   | {
       type: "wifi_clients_update";
       radio: "2G" | "5G" | "6G";

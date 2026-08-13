@@ -6,6 +6,9 @@ import ConnectionCard from "../components/ConnectionCard";
 import ConsolePanel from "../components/ConsolePanel";
 import CpuMemoryPage from "./CpuMemoryPage";
 import OverviewPage from "./OverviewPage";
+import SiteSurveyPage from "./SiteSurveyPage";
+import SsidCapabilityPage from "./SsidCapabilityPage";
+import WifiClientsPage from "./WifiClientsPage";
 
 /**
  * App shell with the sidebar nav restored.
@@ -22,6 +25,9 @@ import OverviewPage from "./OverviewPage";
 const PAGES = [
   { id: "overview", label: "Overview", icon: "◉" },
   { id: "cpu", label: "CPU / Memory", icon: "◧" },
+  { id: "wifi", label: "Wi-Fi clients", icon: "⌁" },
+  { id: "ssid", label: "SSID Capability", icon: "◒" },
+  { id: "survey", label: "Site Survey", icon: "⌖" },
   { id: "console", label: "Serial console", icon: "▤" },
 ] as const;
 
@@ -80,6 +86,9 @@ export default function AppShell() {
         <main className="content">
           {page === "overview" ? <OverviewPage monitor={monitor} /> : null}
           {page === "cpu" ? <CpuMemoryPage monitor={monitor} /> : null}
+          {page === "wifi" ? <WifiClientsPage monitor={monitor} /> : null}
+          {page === "ssid" ? <SsidCapabilityPage /> : null}
+          {page === "survey" ? <SiteSurveyPage /> : null}
           {page === "console" ? (
             <>
               <ConnectionCard serial={monitor.serial} onChanged={monitor.refreshSerial} />
