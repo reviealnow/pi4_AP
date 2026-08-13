@@ -66,8 +66,10 @@ no parser, WebSocket or UI failure can interrupt it.
 backend/.venv/bin/pip install -r backend/requirements-dev.txt
 cd backend && .venv/bin/python -m pytest && .venv/bin/python -m ruff check .
 
-# frontend: dev server on :5173, proxying /api and /ws to the backend on :8080
-cd frontend && npm install && npm run dev
+# frontend: unit tests, then the dev server on :5173 (proxies /api and /ws to :8080)
+cd frontend && npm install
+npm test          # vitest — pure state-derivation logic, no browser needed
+npm run dev
 
 # rebuild the committed bundle after any frontend change
 cd frontend && npm run build   # writes frontend/dist/ — commit it
