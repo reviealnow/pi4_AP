@@ -53,12 +53,12 @@ export default function ConnectionCard({ serial, onChanged }: Props) {
     try {
       const found = await listSerialPorts();
       setPorts(found);
-      setSelectedPort((prev) => {
-        if (prev && found.some((port) => port.device === prev)) {
-          return prev;
-        }
-        return found[0]?.device ?? prev;
-      });
+      // Seed the picker only when nothing is selected yet. Falling back to
+      // found[0] whenever the selection is missing from the scan would clobber
+      // a port the backend actually has open but that the scan cannot see — a
+      // PTY, or a device that dropped off the enumeration — which is exactly
+      // what happens when this card mounts with a session already running.
+      setSelectedPort((prev) => prev || found[0]?.device || prev);
     } catch (cause) {
       setError(humanizeApiError(cause));
     }

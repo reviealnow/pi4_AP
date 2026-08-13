@@ -65,6 +65,10 @@ def open_serial(body: SerialOpenRequest, request: Request) -> dict:
     worker.close()
     request.app.state.console_batcher.flush()
     request.app.state.console_ring.clear()
+    # A new DUT session starts with no history: the previous DUT's snapshots and
+    # identity must not linger in the charts or on Overview.
+    request.app.state.parser.reset()
+    request.app.state.snapshot_store.clear()
 
     try:
         worker.open(port=body.port, baudrate=body.baudrate)

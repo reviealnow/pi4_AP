@@ -18,10 +18,11 @@ designed to sit next to a mesh node or a DUT that needs close watching.
 
 ## Status
 
-**M2 (console handoff) implemented** — the node captures a DUT's serial output
-to rotating raw logs, supports Release/Reacquire for an external terminal, and
-offers an opt-in in-process TCP bridge while continuing to log. Milestones
-M3–M5 (parsers, monitoring pages, fleet agent and deployment) are still ahead; see
+**M3 (parser + monitoring pages) implemented** — on top of M2's capture,
+handoff and rotation, the node now parses the DUT's sysmon output and serves an
+Overview page (identity, uptime, KPI row) and a CPU / Memory page (inline-SVG
+line charts, 5 min / 30 min / 2 h windows, per-core series). Milestones M4–M5
+(Wi-Fi / SSID / Survey pages, fleet agent and deployment) are still ahead; see
 [docs/SPEC.md §5](docs/SPEC.md).
 
 Implementation is done by two LLM coding agents (Claude Opus 5 and GPT-5.6)
@@ -31,12 +32,16 @@ under a cross-review workflow — see [docs/SPEC.md](docs/SPEC.md) and
 ## Layout
 
 ```
-backend/    FastAPI app, serial worker  (parsers + fleet agent: M3/M5)
+backend/    FastAPI app, serial worker, sysmon parser  (fleet agent: M5)
 frontend/   React/Vite source; the built dist/ is committed and shipped to the Pi
-scripts/    soak_test.sh — the M1 acceptance soak
+scripts/    acceptance harnesses (soak / handoff / rotation / bridge / monitoring)
 deploy/     systemd unit, install.sh, config examples  (M5)
 docs/       SPEC.md, REVIEW_WORKFLOW.md
 ```
+
+Parser fixtures live in `backend/tests/fixtures/` and are real DUT captures
+(SPEC §6), scrubbed of device identifiers before being committed — this repo is
+public. Runtime logs under `backend/logs/` stay gitignored.
 
 ## Running the node
 
@@ -61,8 +66,10 @@ no parser, WebSocket or UI failure can interrupt it.
 backend/.venv/bin/pip install -r backend/requirements-dev.txt
 cd backend && .venv/bin/python -m pytest && .venv/bin/python -m ruff check .
 
-# frontend: dev server on :5173, proxying /api and /ws to the backend on :8080
-cd frontend && npm install && npm run dev
+# frontend: unit tests, then the dev server on :5173 (proxies /api and /ws to :8080)
+cd frontend && npm install
+npm test          # vitest — pure state-derivation logic, no browser needed
+npm run dev
 
 # rebuild the committed bundle after any frontend change
 cd frontend && npm run build   # writes frontend/dist/ — commit it
@@ -81,6 +88,14 @@ M2 acceptance checks (PTY-backed; no DUT hardware required):
 ./scripts/handoff_test.sh
 ./scripts/rotation_test.sh
 ./scripts/bridge_test.sh
+```
+
+M3 acceptance — replays a real DUT capture and asserts live KPIs, identity and
+chart backfill, plus that the raw log is still byte-identical (adding a parser
+must not cost the capture a byte):
+
+```bash
+./scripts/monitoring_test.sh
 ```
 
 Raw logs rotate at 50 MiB per file with a 200 MiB directory cap by default.

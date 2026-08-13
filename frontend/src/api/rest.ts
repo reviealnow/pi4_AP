@@ -2,9 +2,13 @@
  * REST client for the node's control surface.
  *
  * Ported from DUT_browser's `src/api/rest.ts`: the `get`/`post` helpers and
- * `humanizeApiError`. Cut: snapshots, console tail (M1 replays the ring over
- * /ws instead), analyzer, files, bulletin and the DUT-registry calls.
+ * `humanizeApiError`. Cut: console tail (the ring replays over /ws instead),
+ * analyzer, files, bulletin and the DUT-registry calls. M3 restores the
+ * snapshot backfill call, since charts must populate on load rather than wait
+ * ~70 s for the DUT's next Test Time.
  */
+
+import type { DutIdentity, SnapshotPayload } from "./websocket";
 
 export type SerialPortInfo = {
   device: string;
@@ -121,4 +125,18 @@ export function logDownloadUrl(): string {
 
 export function namedLogDownloadUrl(name: string): string {
   return `/api/serial/logs/${encodeURIComponent(name)}`;
+}
+
+/** Accumulated snapshot history for chart backfill (SPEC §3.2). */
+export async function getSnapshots(limit = 240): Promise<SnapshotPayload[]> {
+  const payload = await request<{ snapshots: SnapshotPayload[] }>(`/api/snapshots?limit=${limit}`);
+  return payload.snapshots ?? [];
+}
+
+/** Latest parsed DUT identity + snapshot, for an Overview that loads late. */
+export async function getDut(): Promise<{
+  identity: DutIdentity | null;
+  snapshot: SnapshotPayload | null;
+}> {
+  return request<{ identity: DutIdentity | null; snapshot: SnapshotPayload | null }>("/api/dut");
 }

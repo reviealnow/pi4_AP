@@ -53,7 +53,7 @@ def wait_for(predicate, timeout: float = 5.0):
 
 
 def test_health_and_port_listing(client):
-    assert client.get("/health").json() == {"ok": True, "milestone": "M2"}
+    assert client.get("/health").json() == {"ok": True, "milestone": "M3"}
     assert isinstance(client.get("/api/serial/ports").json()["ports"], list)
 
 
@@ -161,6 +161,87 @@ def test_reopening_does_not_replay_the_previous_session(client, pty_pair):
         assert ws.receive_json()["lines"] == ["new-session-line"]
 
     client.post("/api/serial/close")
+
+
+def test_reconnecting_client_is_replayed_a_snapshot_baseline(client, pty_pair):
+    """M3 review finding: the browser folds snapshot_delta onto a per-connection
+    baseline that REST backfill cannot reach. Without a snapshot_update at
+    connect time, a reconnecting client drops every delta until the DUT's next
+    Test Time (~70 s) and its charts sit stale."""
+    master_fd, slave_name = pty_pair
+    assert client.post("/api/serial/open", json={"port": slave_name, "baudrate": 115200}).status_code == 200
+
+    os.write(
+        master_fd,
+        b"= Test Time: 1, 2026-06-09 03:45:34 =\n"
+        b"CPU0:   0.0% usr   4.9% sys   0.0% nic  86.4% idle   0.0% io   1.0% irq   7.8%% sirq\n"
+        b"CPU1:   1.0% usr   0.0% sys   0.0% nic  98.0% idle   0.0% io   0.0% irq   1.0%% sirq\n"
+        b"MemTotal:         843132 kB\n"
+        b"MemAvailable:     475472 kB\n"
+        b'{"data":{"model_name":"AP6 840E","uptime":"1 day 00:00:01",'
+        b'"firmware_version":"1.10.336","workload":{"cpu_load":4}},"error_code":0}\n',
+    )
+    assert wait_for(lambda: client.get("/api/snapshots").json()["snapshots"])
+
+    # A client connecting *now* stands in for a reconnect after a drop. The
+    # baseline is replayed first, so reading one event is enough to catch a
+    # regression — no blocking on an event that never arrives.
+    with client.websocket_connect("/ws") as ws:
+        first = ws.receive_json()
+        assert first["type"] == "snapshot_update", f"baseline not replayed first, got {first['type']}"
+        replay = [first, ws.receive_json(), ws.receive_json()]
+
+    by_type = {event["type"]: event for event in replay}
+    snapshot = by_type["snapshot_update"]["snapshot"]
+    # The baseline must be the *accumulated* state, not just the first core.
+    assert sorted(snapshot["cpu"]) == ["0", "1"]
+    assert snapshot["memory"]["MemAvailable"] == 475472
+    assert by_type["dut_identity"]["identity"]["model"] == "AP6 840E"
+    assert "console_line_batch" in by_type
+
+    client.post("/api/serial/close")
+
+
+def test_backfill_carries_wifi_client_counts(client, pty_pair):
+    """M3 review finding: a reloaded page seeds its Wi-Fi client KPI from REST
+    history, so the snapshots that history serves must carry the parsed
+    per-radio counts — otherwise Overview reports nothing after a reload even
+    though the node parsed a client block."""
+    master_fd, slave_name = pty_pair
+    assert client.post("/api/serial/open", json={"port": slave_name, "baudrate": 115200}).status_code == 200
+
+    os.write(
+        master_fd,
+        b"= Test Time: 1, 2026-02-26 09:46:01 =\n"
+        b"CPU0: 1.9% usr 2.9% sys 0.0% nic 80.6% idle 0.0% io 1.9% irq 12.6% sirq\n"
+        b"--- CLIENTS Radio=5G ---\n"
+        b'{"data": {"total_size": 2, "client_list": ['
+        b'{"mac":"AA:BB:CC:00:11:22","rssi":-42},{"mac":"AA:BB:CC:00:11:33","rssi":-55}]}}\n',
+    )
+
+    def snapshot_with_clients():
+        served = client.get("/api/snapshots").json()["snapshots"]
+        return served if served and served[-1].get("wifi_clients") else None
+
+    snapshots = wait_for(snapshot_with_clients)
+    assert snapshots is not None, "snapshot history never carried the client block"
+    assert snapshots[-1]["wifi_clients"]["5G"]["total_size"] == 2
+    assert len(snapshots[-1]["wifi_clients"]["5G"]["clients"]) == 2
+
+    # The same counts must also reach a reconnecting client's replay baseline.
+    with client.websocket_connect("/ws") as ws:
+        first = ws.receive_json()
+    assert first["type"] == "snapshot_update"
+    assert first["snapshot"]["wifi_clients"]["5G"]["total_size"] == 2
+
+    client.post("/api/serial/close")
+
+
+def test_replay_is_empty_before_any_dut_output(client):
+    """No snapshot yet must not fabricate one — a client just gets nothing."""
+    with client.websocket_connect("/ws") as ws:
+        ws.send_text("ping")  # keeps the socket open long enough to observe
+    assert client.get("/api/snapshots").json()["snapshots"] == []
 
 
 def test_current_log_download_is_404_before_any_session(client):

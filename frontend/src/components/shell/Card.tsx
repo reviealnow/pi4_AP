@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 
-/** Ported verbatim from DUT_browser's `src/components/shell/Card.tsx`
- *  (the `EmptyState` and `KpiCard` exports are cut — M1 has no KPI row). */
+/** Ported verbatim from DUT_browser's `src/components/shell/Card.tsx`.
+ *  M1 kept only `Card`; M3 restores `KpiCard` and `EmptyState` for Overview. */
 
 type CardProps = {
   title: string;
@@ -23,5 +23,40 @@ export function Card({ title, subtitle, actions, className, children }: CardProp
       </div>
       <div className="card-body">{children}</div>
     </section>
+  );
+}
+
+type KpiCardProps = {
+  label: string;
+  value?: ReactNode;
+  sub?: string;
+};
+
+export function KpiCard({ label, value, sub }: KpiCardProps) {
+  const isEmpty = value === undefined || value === null || value === "";
+  return (
+    <div className="kpi">
+      <div className="kpi-label">{label}</div>
+      <div className={`kpi-value${isEmpty ? " empty" : ""}`}>{isEmpty ? "—" : value}</div>
+      {sub ? <div className="kpi-sub">{sub}</div> : null}
+    </div>
+  );
+}
+
+type EmptyStateProps = {
+  icon?: string;
+  message: string;
+  hint?: string;
+};
+
+export function EmptyState({ icon = "—", message, hint }: EmptyStateProps) {
+  return (
+    <div className="empty-state">
+      <div className="ico" aria-hidden>
+        {icon}
+      </div>
+      <div className="msg">{message}</div>
+      {hint ? <div className="hint">{hint}</div> : null}
+    </div>
   );
 }
