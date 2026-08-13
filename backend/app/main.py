@@ -143,11 +143,35 @@ def console_efficiency() -> dict:
     return report
 
 
+def _replay_events() -> list[dict]:
+    """Current node state, as ordinary events, for a (re)connecting client.
+
+    The snapshot matters as much as the console backlog: the browser folds
+    ``snapshot_delta`` onto a per-connection baseline it cannot get from REST,
+    so without a ``snapshot_update`` here a reconnecting client drops every
+    delta until the DUT's next Test Time and its charts freeze.
+
+    Monitoring state goes first: it is small and it is what the charts block on,
+    whereas the console backlog can be 5000 lines. The order is deterministic so
+    the regression test fails fast instead of blocking on a missing event.
+    """
+    events: list[dict] = []
+    snapshot = app.state.snapshot_store.latest()
+    if snapshot is not None:
+        events.append({"type": "snapshot_update", "snapshot": snapshot})
+    identity = app.state.parser.identity
+    if identity is not None:
+        events.append({"type": "dut_identity", "identity": identity})
+    lines = app.state.console_ring.recent()
+    if lines:
+        events.append({"type": "console_line_batch", "lines": lines})
+    return events
+
+
 @app.websocket("/ws")
 async def websocket_endpoint(ws: WebSocket) -> None:
     manager: WebSocketManager = app.state.ws_manager
-    console_ring: ConsoleRing = app.state.console_ring
-    await manager.connect(ws, replay=console_ring.recent)
+    await manager.connect(ws, replay=_replay_events)
     try:
         while True:
             await ws.receive_text()

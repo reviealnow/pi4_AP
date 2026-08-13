@@ -108,6 +108,32 @@ function upsertSnapshot(history: SnapshotPayload[], snapshot: SnapshotPayload): 
   return [...history, snapshot].slice(-MAX_HISTORY);
 }
 
+/**
+ * Per-radio client counts carried by backfilled snapshots.
+ *
+ * The parser folds each `--- CLIENTS Radio= ---` block into the snapshot it
+ * belongs to, so REST history already holds the counts. Without reading them
+ * back, a reloaded page shows no client report even though the node parsed one
+ * — DUT_browser seeds wifi state from its backfill for exactly this reason and
+ * the M1 cut dropped it. Later radios win, so the newest snapshot decides.
+ */
+export function clientTotalsFromSnapshots(snapshots: SnapshotPayload[]): {
+  totals: Record<string, number>;
+  seen: boolean;
+} {
+  const totals: Record<string, number> = {};
+  let seen = false;
+  for (const snapshot of snapshots) {
+    for (const [radio, payload] of Object.entries(snapshot.wifi_clients ?? {})) {
+      if (payload && typeof payload.total_size === "number") {
+        totals[radio] = payload.total_size;
+        seen = true;
+      }
+    }
+  }
+  return { totals, seen };
+}
+
 export function appendConsoleLines(
   previous: ConsoleLine[],
   incoming: string[],
@@ -145,6 +171,14 @@ export function useDutMonitor(): DutMonitorState {
       if (snapshots.length > 0) {
         setHistory(snapshots.slice(-MAX_HISTORY));
         setSnapshot((prev) => prev ?? snapshots[snapshots.length - 1]);
+        // Restore the Wi-Fi client counts the snapshots already carry, so a
+        // reloaded page reports what the node parsed instead of falling back to
+        // the identity blob's figure with a "no client report yet" caption.
+        const { totals, seen } = clientTotalsFromSnapshots(snapshots);
+        if (seen) {
+          setClientsByRadio((prev) => ({ ...totals, ...prev }));
+          setClientsSeen(true);
+        }
       }
     } catch {
       // Offline or endpoint unavailable: charts stay empty until live events.

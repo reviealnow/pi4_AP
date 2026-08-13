@@ -59,12 +59,19 @@ class WebSocketManager:
         with self._ingress_lock:
             return self._dropped_events
 
-    async def connect(self, ws: WebSocket, replay: Callable[[], list[str]] | None = None) -> None:
-        """Accept a client and replay the console ring buffer to it.
+    async def connect(self, ws: WebSocket, replay: Callable[[], list[dict[str, Any]]] | None = None) -> None:
+        """Accept a client and replay the current node state to it.
 
-        The replay is sent as an ordinary ``console_line_batch`` so the client
-        needs no special-case handling and the DUT_browser event contract is
-        unchanged.
+        ``replay`` returns ordinary events — the console backlog, the latest
+        accumulated snapshot, the DUT identity — so the client needs no
+        special-case handling and the DUT_browser event contract is unchanged.
+
+        Replaying the snapshot is not cosmetic. The browser's socket layer folds
+        ``snapshot_delta`` onto a **per-connection** baseline and drops deltas
+        until it has one; REST backfill populates React state but cannot reach
+        that private reducer. Without a ``snapshot_update`` at connect time, a
+        reconnecting client discards every delta until the DUT's next Test Time
+        (~70 s on real hardware) and its charts sit stale. M3 review finding.
 
         Known, accepted race: a batch that has already been appended to the ring
         but whose broadcast task has not yet run will reach this client twice
@@ -79,13 +86,12 @@ class WebSocketManager:
             self._clients.add(ws)
             if replay is None:
                 return
-            lines = replay()
-            if not lines:
-                return
-            try:
-                await ws.send_json({"type": "console_line_batch", "lines": lines})
-            except Exception:
-                self.disconnect(ws)
+            for event in replay():
+                try:
+                    await ws.send_json(event)
+                except Exception:
+                    self.disconnect(ws)
+                    return
 
     def disconnect(self, ws: WebSocket) -> None:
         self._clients.discard(ws)

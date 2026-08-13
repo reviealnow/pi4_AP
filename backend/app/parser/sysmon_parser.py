@@ -233,6 +233,13 @@ class SysMonParser:
                 "total_size": total_size,
                 "clients": clients,
             }
+            # Publish the updated snapshot too, not just the live
+            # wifi_clients_update. DUT_browser folds the counts in silently and
+            # relies on a later CPU/meminfo line to push them out; when the
+            # CLIENTS block ends the snapshot — which is where DUTs tend to put
+            # it — nothing ever does, so the counts never reach the snapshot
+            # store and a reloaded page reports no clients. M3 review finding.
+            self._emit_snapshot_update()
 
     # ------------------------------------------------------------ snapshots
 

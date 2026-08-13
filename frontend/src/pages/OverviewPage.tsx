@@ -37,7 +37,16 @@ export default function OverviewPage({ monitor }: Props) {
         <KpiCard
           label="Wi-Fi clients"
           value={clientTotal ?? identity?.connected_clients ?? undefined}
-          sub={clientTotal === null ? "no client report yet" : "associated across radios"}
+          // The caption has to describe the number actually shown. Saying "no
+          // client report yet" while rendering the identity blob's count is a
+          // contradiction the M3 review caught.
+          sub={
+            clientTotal !== null
+              ? "associated across radios"
+              : identity?.connected_clients != null
+                ? "reported by the DUT"
+                : "no client report yet"
+          }
         />
         <KpiCard
           label="Raw log"
