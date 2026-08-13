@@ -3,15 +3,15 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from pathlib import Path
 
 import yaml
 from fastapi import APIRouter, HTTPException, Request
 
+from app.config import COMMANDS_PATH
 from app.services.wifi import normalize_clients, parse_site_survey
+from app.services.wifi_clients import discover_vaps, parse_apstats, parse_wlanconfig_list
 
 router = APIRouter(prefix="/api/wifi", tags=["wifi"])
-COMMANDS_PATH = Path(__file__).resolve().parents[3] / "config" / "dut_commands.yaml"
 
 
 def _commands() -> dict[str, str]:
@@ -22,7 +22,50 @@ def _commands() -> dict[str, str]:
 
 @router.get("/clients")
 def wifi_clients(request: Request) -> dict:
-    return {"clients": normalize_clients(request.app.state.snapshot_store.latest())}
+    cached = request.app.state.wifi_client_scan
+    if cached["timestamp"] is not None:
+        return cached
+    return {
+        "clients": normalize_clients(request.app.state.snapshot_store.latest()),
+        "timestamp": None,
+    }
+
+
+@router.post("/clients/refresh")
+def refresh_wifi_clients(request: Request) -> dict:
+    """Explicit on-demand serial enrichment; page loads never send commands."""
+    worker = request.app.state.serial_worker
+    commands = _commands()
+    snapshot_clients = normalize_clients(request.app.state.snapshot_store.latest())
+    by_mac = {str(row.get("mac", "")).lower(): row for row in snapshot_clients if row.get("mac")}
+    try:
+        vaps = discover_vaps(worker.capture_command(commands["wifi_interfaces"], timeout=8))
+        for vap in vaps:
+            command = commands["wifi_client_list"].format(iface=vap["iface"])
+            for detail in parse_wlanconfig_list(worker.capture_command(command, timeout=8), vap["iface"]):
+                detail["ssid"] = vap["ssid"]
+                detail["bss"] = vap["iface"]
+                mac = detail["mac"].lower()
+                merged = {**by_mac.get(mac, {}), **detail}
+                stats_command = commands["wifi_client_stats"].format(mac=mac)
+                try:
+                    stats = parse_apstats(worker.capture_command(stats_command, timeout=8))
+                except (RuntimeError, TimeoutError):
+                    stats = {}
+                merged["stats"] = stats
+                if stats.get("avg_tx_kbps") is not None:
+                    merged["tx_rate"] = f"{stats['avg_tx_kbps'] / 1000:.1f}M"
+                if stats.get("avg_rx_kbps") is not None:
+                    merged["rx_rate"] = f"{stats['avg_rx_kbps'] / 1000:.1f}M"
+                by_mac[mac] = merged
+    except Exception as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    result = {
+        "clients": list(by_mac.values()),
+        "timestamp": datetime.now(UTC).isoformat(),
+    }
+    request.app.state.wifi_client_scan = result
+    return result
 
 
 @router.get("/capabilities")

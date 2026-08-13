@@ -69,6 +69,31 @@ def accumulated_snapshots(events: list[dict]) -> list[dict]:
     return [states[key] for key in sorted(states)]
 
 
+def test_ssid_capability_wait_preserves_interleaved_snapshot_boundary():
+    events: list[dict] = []
+    parser = SysMonParser(events.append)
+    parser.feed("= Test Time: 1, 2026-02-26 09:46:01 =")
+    parser.feed("CPU0: 1.9% usr 2.9% sys 0.0% nic 80.6% idle 0.0% io 1.9% irq 12.6% sirq")
+    parser.feed("--- SSID CAPABILITY ---")
+    parser.feed('{"data":{"model_name":"interleaved identity"}}')
+    parser.feed("= Test Time: 2, 2026-02-26 09:46:11 =")
+    parser.feed('[{"ssid":"Lab","phy_mode":"11ax"}]')
+    parser.flush()
+
+    snapshots = accumulated_snapshots(events)
+    capabilities = [event for event in events if event["type"] == "ssid_capability_update"]
+    assert [snapshot["test_count"] for snapshot in snapshots] == [1, 2]
+    assert capabilities[0]["capabilities"][0]["ssid"] == "Lab"
+
+
+def test_ssid_capability_wait_expires_when_payload_never_arrives():
+    parser = SysMonParser(lambda _event: None)
+    parser.feed("--- SSID CAPABILITY ---")
+    for _ in range(parser.SSID_CAPABILITY_WAIT_LINES):
+        parser.feed("ordinary sysmon noise")
+    assert parser._pending_ssid_capability is False
+
+
 # ----------------------------------------------------------------- fixtures
 
 

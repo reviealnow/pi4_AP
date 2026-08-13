@@ -1,2 +1,0 @@
-ssid_capability: "echo '--- SSID CAPABILITY ---'; wifi_capabilities --json"
-site_survey: "iwlist scan"

@@ -167,6 +167,28 @@ def test_survey_fails_immediately_when_port_is_released(client, pty_pair):
     assert response.json()["detail"] == "Port released to external terminal"
 
 
+def test_client_detail_refresh_runs_configured_serial_commands(client, monkeypatch):
+    worker = client.app.state.serial_worker
+    outputs = iter([
+        'ath16     IEEE 802.11axa  ESSID:"Lab-5"\n          Mode:Master',
+        "02:11:22:33:44:55 1 36 866M 780M -48 00:12:03 IEEE80211_MODE_11AXA_HE80 2 2",
+        "Average Tx Rate (kbps) = 900000\nAverage Rx Rate (kbps) = 700000",
+    ])
+    commands: list[str] = []
+
+    def capture(command: str, timeout: float) -> str:
+        commands.append(command)
+        return next(outputs)
+
+    monkeypatch.setattr(worker, "capture_command", capture)
+    response = client.post("/api/wifi/clients/refresh")
+    assert response.status_code == 200, response.text
+    row = response.json()["clients"][0]
+    assert (row["tx_rate"], row["rx_rate"], row["ssid"]) == ("900.0M", "700.0M", "Lab-5")
+    assert commands == ["iwconfig", "wlanconfig ath16 list", "apstats -s -m 02:11:22:33:44:55"]
+    assert client.get("/api/wifi/clients").json()["timestamp"] is not None
+
+
 def test_live_lines_reach_a_connected_client(client, pty_pair):
     master_fd, slave_name = pty_pair
     assert client.post("/api/serial/open", json={"port": slave_name, "baudrate": 115200}).status_code == 200

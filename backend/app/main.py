@@ -95,6 +95,7 @@ async def lifespan(app: FastAPI):
     app.state.parser = parser
     app.state.snapshot_store = snapshot_store
     app.state.site_survey = {"timestamp": None, "results": []}
+    app.state.wifi_client_scan = {"timestamp": None, "clients": []}
 
     try:
         yield

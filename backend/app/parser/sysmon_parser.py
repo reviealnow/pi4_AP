@@ -63,6 +63,7 @@ class SysMonParser:
     # Cheap pre-filter before attempting json.loads on a console line.
     IDENTITY_HINT = '"model_name"'
     SSID_CAPABILITY_MARKER = "--- SSID CAPABILITY ---"
+    SSID_CAPABILITY_WAIT_LINES = 100
 
     def __init__(self, on_event: Callable[[dict], None]) -> None:
         self.on_event = on_event
@@ -72,6 +73,7 @@ class SysMonParser:
         self._identity: dict | None = None
         self._ssid_capabilities: list[dict] = []
         self._pending_ssid_capability = False
+        self._ssid_capability_wait_lines = 0
         self._snapshot_full_count = 0
         self._snapshot_delta_count = 0
 
@@ -82,6 +84,7 @@ class SysMonParser:
         self._identity = None
         self._ssid_capabilities = []
         self._pending_ssid_capability = False
+        self._ssid_capability_wait_lines = 0
         self._snapshot_full_count = 0
         self._snapshot_delta_count = 0
 
@@ -109,11 +112,17 @@ class SysMonParser:
 
         if text == self.SSID_CAPABILITY_MARKER:
             self._pending_ssid_capability = True
+            self._ssid_capability_wait_lines = self.SSID_CAPABILITY_WAIT_LINES
             return
         if self._pending_ssid_capability:
-            self._pending_ssid_capability = False
-            self._consume_ssid_capability_json(text)
-            return
+            if text.lstrip().startswith(("{", "[")):
+                if self._consume_ssid_capability_json(text):
+                    self._pending_ssid_capability = False
+                    self._ssid_capability_wait_lines = 0
+                    return
+            self._ssid_capability_wait_lines -= 1
+            if self._ssid_capability_wait_lines <= 0:
+                self._pending_ssid_capability = False
 
         snap_match = self.SNAPSHOT_RE.match(text)
         if snap_match:
@@ -171,16 +180,17 @@ class SysMonParser:
 
     # ------------------------------------------------------------- identity
 
-    def _consume_ssid_capability_json(self, text: str) -> None:
+    def _consume_ssid_capability_json(self, text: str) -> bool:
         try:
             parsed = json.loads(text)
         except json.JSONDecodeError:
-            return
+            return False
         rows = parsed.get("data") if isinstance(parsed, dict) else parsed
         if not isinstance(rows, list):
-            return
+            return False
         self._ssid_capabilities = [row for row in rows if isinstance(row, dict)]
         self.on_event({"type": "ssid_capability_update", "capabilities": deepcopy(self._ssid_capabilities)})
+        return True
 
     def _consume_identity_json(self, text: str) -> None:
         """Parse the DUT's JSON status blob into a ``dut_identity`` event."""
