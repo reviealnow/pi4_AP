@@ -726,6 +726,23 @@ body {
   max-height: 220px;
 }
 
+/* ---------- M4 Wi-Fi tables (ported class names from DUT_browser) ---------- */
+.table-scroll { overflow-x: auto; }
+.wifitable, .filetable { width: 100%; border-collapse: collapse; }
+.wifitable th, .wifitable td, .filetable th, .filetable td {
+  padding: var(--space-3); border-bottom: 1px solid var(--border); text-align: left; white-space: nowrap;
+}
+.wifitable th, .filetable th { color: var(--muted); font-size: 12px; }
+.wifitable small { color: var(--faint); display: block; }
+.mono { font-family: var(--mono); }
+.card-actions { display: flex; gap: var(--space-2); }
+.card-actions input, .card-actions select { border: 1px solid var(--border); border-radius: 8px; padding: var(--space-2); background: var(--panel); }
+.client-spark { width: 100px; height: 35px; display: block; }
+.occupancy { width: 100%; max-height: 180px; }
+.occupancy rect { fill: var(--accent); opacity: .75; }
+.occupancy text { fill: var(--muted); font-size: 11px; }
+.error-text { color: var(--danger); }
+
 /* ---------- Responsive ---------- */
 
 @media (max-width: 1100px) {

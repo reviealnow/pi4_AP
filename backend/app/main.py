@@ -20,6 +20,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 
 from app.api.serial_api import router as serial_router
+from app.api.wifi_api import router as wifi_router
 from app.config import (
     FRONTEND_DIST,
     HOST,
@@ -93,6 +94,7 @@ async def lifespan(app: FastAPI):
     app.state.tcp_bridge = tcp_bridge
     app.state.parser = parser
     app.state.snapshot_store = snapshot_store
+    app.state.site_survey = {"timestamp": None, "results": []}
 
     try:
         yield
@@ -107,11 +109,12 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="pi4_AP node", lifespan=lifespan)
 app.include_router(serial_router)
+app.include_router(wifi_router)
 
 
 @app.get("/health")
 def health() -> dict:
-    return {"ok": True, "milestone": "M3"}
+    return {"ok": True, "milestone": "M4"}
 
 
 @app.get("/api/snapshots")
@@ -162,6 +165,9 @@ def _replay_events() -> list[dict]:
     identity = app.state.parser.identity
     if identity is not None:
         events.append({"type": "dut_identity", "identity": identity})
+    capabilities = app.state.parser.ssid_capabilities
+    if capabilities:
+        events.append({"type": "ssid_capability_update", "capabilities": capabilities})
     lines = app.state.console_ring.recent()
     if lines:
         events.append({"type": "console_line_batch", "lines": lines})

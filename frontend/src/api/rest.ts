@@ -9,6 +9,10 @@
  */
 
 import type { DutIdentity, SnapshotPayload } from "./websocket";
+import type { SsidCapability, WifiClient } from "./websocket";
+
+export type SurveyResult = { ssid: string | null; bssid: string; channel: number | null; rssi: number | null; security: string };
+export type SurveyState = { timestamp: string | null; results: SurveyResult[] };
 
 export type SerialPortInfo = {
   device: string;
@@ -140,3 +144,15 @@ export async function getDut(): Promise<{
 }> {
   return request<{ identity: DutIdentity | null; snapshot: SnapshotPayload | null }>("/api/dut");
 }
+
+export async function getWifiClients(): Promise<WifiClient[]> {
+  return (await request<{ clients: WifiClient[] }>("/api/wifi/clients")).clients;
+}
+export async function getCapabilities(): Promise<SsidCapability[]> {
+  return (await request<{ capabilities: SsidCapability[] }>("/api/wifi/capabilities")).capabilities;
+}
+export async function refreshCapabilities(): Promise<SsidCapability[]> {
+  return (await post<{ capabilities: SsidCapability[] }>("/api/wifi/capabilities/refresh", {})).capabilities;
+}
+export async function getSurvey(): Promise<SurveyState> { return request<SurveyState>("/api/wifi/survey"); }
+export async function runSurvey(): Promise<SurveyState> { return post<SurveyState>("/api/wifi/survey", {}); }
